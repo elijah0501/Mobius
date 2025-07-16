@@ -21,7 +21,8 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 
 export default defineConfig(({ command }) => ({
-  // 根据构建命令设置基础路径
+  // setup base path for GitHub Pages based on the command
+  // 'build' command will set the base path to '/Mobius/'
   base: command === 'build' ? '/Mobius/' : '/',
   plugins: [
     vue(),
