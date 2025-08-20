@@ -61,7 +61,6 @@ export default {
   left: 0;
   width: 100%;
   z-index: 1000;
-  /* 设置固定高度而不是使用padding */
   height: 80px;
   transition: all 0.3s ease;
   backdrop-filter: blur(0px);
@@ -73,7 +72,6 @@ export default {
   background: rgba(255, 255, 255, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-  /* 滚动后减小高度 */
   height: 60px;
 }
 
@@ -81,16 +79,13 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
-  /* 使用flex布局确保垂直居中 */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* 容器占满导航栏高度 */
   height: 100%;
 }
 
 .nav-logo {
-  /* 确保logo容器也参与flex布局 */
   display: flex;
   align-items: center;
 }
@@ -101,7 +96,6 @@ export default {
   color: #333;
   text-decoration: none;
   transition: color 0.3s ease;
-  /* 确保链接也参与flex布局 */
   display: flex;
   align-items: center;
 }
@@ -117,7 +111,6 @@ export default {
   margin: 0;
   padding: 0;
   gap: 2rem;
-  /* 确保菜单也垂直居中 */
   align-items: center;
 }
 
@@ -129,7 +122,6 @@ export default {
   border-radius: 25px;
   transition: all 0.3s ease;
   position: relative;
-  /* 确保链接垂直居中 */
   display: flex;
   align-items: center;
 }
@@ -166,7 +158,6 @@ export default {
   flex-direction: column;
   cursor: pointer;
   gap: 4px;
-  /* 确保切换按钮也垂直居中 */
   align-items: center;
   justify-content: center;
 }
@@ -183,7 +174,6 @@ export default {
   background: #fff;
 }
 
-/* 响应式设计 */
 @media (max-width: 768px) {
   .nav-menu {
     display: none;
