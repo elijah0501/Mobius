@@ -4,31 +4,20 @@
 
       <!-- Leaflet Map -->
       <div ref="mapContainer" class="map-container">
-        <!-- Floating Visitor Info Overlay -->
-        <div class="floating-visitor-overlay">
-          <div v-if="currentVisitor.loading" class="visitor-loading">
-            <span class="loading-dot"></span>
-            <span class="loading-text">Detecting your location...</span>
+        <!-- Visitor Log Panel -->
+        <div v-if="visitorLog.length > 0" class="visitor-log-panel">
+          <div class="log-header">
+            <span class="log-dot"></span>
+            <span class="log-title">Visitors</span>
+            <span class="log-count">{{ visitorLog.length }}</span>
           </div>
-          <template v-else-if="!currentVisitor.error">
-            <div class="overlay-content flash-effect">
-              <div class="visitor-icon">🌍</div>
-              <div class="visitor-info-text">
-                <h3 class="visitor-country">{{ currentVisitor.country }}</h3>
-                <p class="visitor-detail">
-                  {{ currentVisitor.region }}<span v-if="currentVisitor.city">, {{ currentVisitor.city }}</span>
-                </p>
-                <p class="visitor-ip">IP: {{ maskIp(currentVisitor.ip) }}</p>
+          <div class="log-list">
+            <div v-for="(v, i) in visitorLog" :key="i" class="log-item" :class="{ 'log-item-current': v.isCurrent }">
+              <span class="log-pin" :class="{ 'log-pin-current': v.isCurrent }"></span>
+              <div class="log-item-info">
+                <span class="log-item-location">{{ v.city ? v.city + ', ' : '' }}{{ v.country }}</span>
+                <span class="log-item-time">{{ v.timeAgo }}</span>
               </div>
-              <div v-if="totalVisitors > 0" class="visitor-counter">
-                <span class="counter-dot"></span>
-                <span class="counter-text">{{ totalVisitors }}</span>
-              </div>
-            </div>
-          </template>
-          <div v-else class="visitor-error">
-            <div class="overlay-content">
-              <p>Location unavailable — your privacy tools may be blocking the request.</p>
             </div>
           </div>
         </div>
@@ -64,6 +53,7 @@ export default {
     const firebaseActive = ref(isFirebaseConfigured)
     const totalVisitors = ref(0)
     const allVisitors = ref([])
+    const visitorLog = ref([])
 
     const currentVisitor = ref({
       country: null,
@@ -86,25 +76,35 @@ export default {
       return ip.split(':').slice(0, 3).join(':') + '::**'
     }
 
-    /** Add a visitor marker to the map with animation */
-    function addVisitorMarker(lat, lon, isCurrent = false, delay = 0) {
+    /** Format timestamp to relative time string */
+    function formatTimeAgo(timestamp) {
+      const seconds = Math.floor((Date.now() - timestamp) / 1000)
+      if (seconds < 60) return 'Just now'
+      if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
+      if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
+      return `${Math.floor(seconds / 86400)}d ago`
+    }
+
+    /** Add a visitor marker to the map with animation + popup */
+    function addVisitorMarker(lat, lon, isCurrent = false, delay = 0, info = null) {
       if (!map) return
       setTimeout(() => {
         if (!map) return
+        let marker
         if (isCurrent) {
           const pulseIcon = L.divIcon({
             className: 'visitor-pulse-marker visitor-pulse-current',
-            iconSize: [24, 24],
-            iconAnchor: [12, 12]
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
           })
-          L.marker([lat, lon], { icon: pulseIcon }).addTo(map)
+          marker = L.marker([lat, lon], { icon: pulseIcon, zIndexOffset: 1000 }).addTo(map)
           L.circleMarker([lat, lon], {
-            radius: 22,
+            radius: 30,
             fillColor: '#4a90e2',
-            fillOpacity: 0.06,
+            fillOpacity: 0.08,
             color: '#4a90e2',
             weight: 1,
-            opacity: 0.15
+            opacity: 0.2
           }).addTo(map)
         } else {
           const dotIcon = L.divIcon({
@@ -112,7 +112,25 @@ export default {
             iconSize: [10, 10],
             iconAnchor: [5, 5]
           })
-          L.marker([lat, lon], { icon: dotIcon }).addTo(map)
+          marker = L.marker([lat, lon], { icon: dotIcon }).addTo(map)
+        }
+        if (marker && info) {
+          const popupHtml = `
+            <div class="visitor-popup">
+              <div class="popup-location">${info.country || 'Unknown'}</div>
+              ${info.region ? `<div class="popup-detail">${info.region}${info.city ? ', ' + info.city : ''}</div>` : ''}
+              ${info.time ? `<div class="popup-time">${info.time}</div>` : ''}
+              ${isCurrent ? '<div class="popup-badge">📍 You</div>' : ''}
+            </div>
+          `
+          marker.bindPopup(popupHtml, {
+            className: 'visitor-map-popup',
+            closeButton: false,
+            offset: [0, isCurrent ? -14 : -5]
+          })
+          if (isCurrent) {
+            setTimeout(() => { if (marker && map) marker.openPopup() }, 300)
+          }
         }
       }, delay)
     }
@@ -182,12 +200,28 @@ export default {
       unsubscribe = fbOnValue(recentQuery, (snapshot) => {
         const data = snapshot.val()
         if (!data) return
-        const visitors = Object.values(data)
+        const visitors = Object.values(data).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
         totalVisitors.value = visitors.length
         allVisitors.value = visitors
+
+        // Build visitor log entries
+        const logEntries = visitors.map(v => ({
+          country: v.country || 'Unknown',
+          city: v.city || '',
+          region: v.region || '',
+          timeAgo: formatTimeAgo(v.timestamp),
+          isCurrent: false
+        }))
+        visitorLog.value = logEntries
+
         visitors.forEach((v, i) => {
           if (v.lat && v.lon) {
-            addVisitorMarker(v.lat, v.lon, false, i * 40)
+            addVisitorMarker(v.lat, v.lon, false, i * 40, {
+              country: v.country,
+              region: v.region,
+              city: v.city,
+              time: formatTimeAgo(v.timestamp)
+            })
           }
         })
       })
@@ -213,8 +247,23 @@ export default {
 
         await recordVisitor(data)
 
+        // Add current visitor to log
+        const currentEntry = {
+          country: data.country_name,
+          city: data.city || '',
+          region: data.region || '',
+          timeAgo: 'Just now',
+          isCurrent: true
+        }
+        visitorLog.value = [currentEntry, ...visitorLog.value.filter(v => !v.isCurrent)]
+
         if (map && data.latitude && data.longitude) {
-          addVisitorMarker(data.latitude, data.longitude, true, 200)
+          addVisitorMarker(data.latitude, data.longitude, true, 200, {
+            country: data.country_name,
+            region: data.region,
+            city: data.city,
+            time: 'Just now'
+          })
 
           if (allVisitors.value.length > 0) {
             allVisitors.value.slice(0, 12).forEach((v, i) => {
@@ -273,6 +322,7 @@ export default {
       currentVisitor,
       firebaseActive,
       totalVisitors,
+      visitorLog,
       maskIp
     }
   }
@@ -287,79 +337,34 @@ export default {
   overflow: hidden;
 }
 
-.floating-visitor-overlay {
+/* Visitor Log Panel */
+.visitor-log-panel {
   position: absolute;
-  top: 30px;
-  left: 30px;
+  top: 15px;
+  right: 15px;
   z-index: 1000;
-  pointer-events: none;
-}
-
-.overlay-content {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  background: rgba(13, 17, 23, 0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 1rem 1.5rem;
+  width: 220px;
+  max-height: 380px;
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  pointer-events: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.flash-effect {
-  animation: info-flash 2.5s infinite alternate ease-in-out;
-}
-
-@keyframes info-flash {
-  0% { box-shadow: 0 0 10px rgba(74, 144, 226, 0.1); opacity: 0.85; transform: scale(0.98); }
-  100% { box-shadow: 0 0 25px rgba(74, 144, 226, 0.6); opacity: 1; transform: scale(1.02); }
-}
-
-.visitor-icon {
-  font-size: 2.2rem;
-  line-height: 1;
-  flex-shrink: 0;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-}
-
-.visitor-info-text {
-  flex: 1;
-}
-
-.visitor-country {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0 0 0.2rem 0;
-}
-
-.visitor-detail {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0 0 0.15rem 0;
-}
-
-.visitor-ip {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.25);
-  font-family: 'SF Mono', 'Fira Code', monospace;
-  margin: 0;
-}
-
-.visitor-counter {
+.log-header {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.9rem;
-  border-radius: 999px;
-  background: rgba(74, 144, 226, 0.12);
-  border: 1px solid rgba(74, 144, 226, 0.2);
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
 }
 
-.counter-dot {
+.log-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -368,41 +373,99 @@ export default {
   animation: dot-pulse 2s ease-in-out infinite;
 }
 
-.counter-text {
-  font-size: 0.85rem;
+.log-title {
+  font-size: 0.8rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.7);
+  flex: 1;
+}
+
+.log-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(74, 144, 226, 0.8);
+  background: rgba(74, 144, 226, 0.12);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
   font-variant-numeric: tabular-nums;
 }
 
-.visitor-loading {
+.log-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 0.4rem 0;
+}
+
+.log-list::-webkit-scrollbar {
+  width: 3px;
+}
+
+.log-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.log-item {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  padding: 0.4rem 1rem;
+  transition: background 0.2s;
 }
 
-.loading-dot {
+.log-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.log-item-current {
+  background: rgba(74, 144, 226, 0.08);
+}
+
+.log-pin {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(74, 144, 226, 0.5);
+  flex-shrink: 0;
+}
+
+.log-pin-current {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
   background: #4a90e2;
-  animation: dot-pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(74, 144, 226, 0.6);
+  animation: dot-pulse 2s ease-in-out infinite;
+}
+
+.log-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.log-item-location {
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.log-item-current .log-item-location {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.log-item-time {
+  display: block;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.25);
+  font-family: 'SF Mono', 'Fira Code', monospace;
 }
 
 @keyframes dot-pulse {
   0%, 100% { opacity: 0.3; transform: scale(0.8); }
   50% { opacity: 1; transform: scale(1.2); }
-}
-
-.loading-text {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.visitor-error p {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 0.9rem;
-  margin: 0;
 }
 
 .map-container {
@@ -459,25 +522,24 @@ export default {
     height: 320px;
   }
 
-  .floating-visitor-overlay {
-    top: 15px;
-    left: 15px;
-    right: 15px;
+  .visitor-log-panel {
+    top: 10px;
+    right: 10px;
+    width: 180px;
+    max-height: 260px;
   }
 
-  .overlay-content {
-    padding: 0.8rem 1rem;
-    flex-wrap: wrap;
-    gap: 0.8rem;
+  .log-header {
+    padding: 0.5rem 0.8rem;
   }
 
-  .visitor-counter {
-    margin-left: auto;
+  .log-item {
+    padding: 0.3rem 0.8rem;
   }
 }
 </style>
 
-<!-- Unscoped styles for Leaflet custom markers -->
+<!-- Unscoped styles for Leaflet custom markers & popups -->
 <style>
 .visitor-pulse-marker {
   position: relative;
@@ -488,16 +550,38 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   background: #4a90e2;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   box-shadow:
-    0 0 8px rgba(74, 144, 226, 0.8),
-    0 0 20px rgba(74, 144, 226, 0.4),
-    0 0 40px rgba(74, 144, 226, 0.2);
+    0 0 10px rgba(74, 144, 226, 0.9),
+    0 0 25px rgba(74, 144, 226, 0.5),
+    0 0 50px rgba(74, 144, 226, 0.3);
   z-index: 2;
+  animation: current-breathe 2.5s ease-in-out infinite;
+}
+
+@keyframes current-breathe {
+  0%, 100% {
+    width: 12px;
+    height: 12px;
+    box-shadow:
+      0 0 6px rgba(74, 144, 226, 0.6),
+      0 0 15px rgba(74, 144, 226, 0.3),
+      0 0 30px rgba(74, 144, 226, 0.15);
+    opacity: 0.85;
+  }
+  50% {
+    width: 18px;
+    height: 18px;
+    box-shadow:
+      0 0 12px rgba(74, 144, 226, 1),
+      0 0 30px rgba(74, 144, 226, 0.6),
+      0 0 60px rgba(74, 144, 226, 0.3);
+    opacity: 1;
+  }
 }
 
 .visitor-pulse-current::after {
@@ -505,9 +589,9 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(74, 144, 226, 0.6);
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(74, 144, 226, 0.7);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: visitor-ring-pulse 2s ease-out infinite;
@@ -526,31 +610,85 @@ export default {
   box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
   opacity: 0.5;
   z-index: 1;
-  animation: visitor-dot-appear 0.5s ease-out;
+  animation: visitor-dot-breathe 3s ease-in-out infinite;
 }
 
-@keyframes visitor-dot-appear {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0);
+@keyframes visitor-dot-breathe {
+  0%, 100% {
+    opacity: 0.3;
+    box-shadow: 0 0 4px rgba(74, 144, 226, 0.3);
+    transform: translate(-50%, -50%) scale(0.8);
   }
-  to {
-    opacity: 0.5;
-    transform: translate(-50%, -50%) scale(1);
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+    transform: translate(-50%, -50%) scale(1.2);
   }
 }
 
 @keyframes visitor-ring-pulse {
   0% {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     opacity: 1;
   }
   100% {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     opacity: 0;
   }
+}
+
+/* Popup styles */
+.visitor-map-popup .leaflet-popup-content-wrapper {
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(74, 144, 226, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  color: #fff;
+  padding: 0;
+}
+
+.visitor-map-popup .leaflet-popup-content {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.visitor-map-popup .leaflet-popup-tip {
+  background: rgba(13, 17, 23, 0.85);
+  border: 1px solid rgba(74, 144, 226, 0.15);
+  border-top: none;
+  border-left: none;
+}
+
+.visitor-popup .popup-location {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2px;
+}
+
+.visitor-popup .popup-detail {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 2px;
+}
+
+.visitor-popup .popup-time {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.visitor-popup .popup-badge {
+  font-size: 0.7rem;
+  color: #4a90e2;
+  font-weight: 600;
+  margin-top: 3px;
 }
 
 .map-container .leaflet-container {
