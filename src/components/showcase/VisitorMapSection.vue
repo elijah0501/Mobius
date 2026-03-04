@@ -293,8 +293,8 @@ export default {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(13, 17, 23, 0.4) 40%,
-    rgba(13, 17, 23, 0.8) 100%
+    rgba(0, 0, 0, 0.4) 40%,
+    #000000 100%
   );
   z-index: 2;
   pointer-events: none;
@@ -309,7 +309,7 @@ export default {
     180deg,
     transparent 0%,
     rgba(0, 0, 0, 0.5) 50%,
-    rgba(0, 0, 0, 0.85) 100%
+    #000000 100%
   );
   z-index: 3;
   pointer-events: none;
@@ -428,7 +428,7 @@ export default {
   width: 100%;
   height: 500px;
   position: relative;
-  background: transparent;
+  background: #000000;
   margin-top: -20px;
 }
 
@@ -578,7 +578,7 @@ export default {
 }
 
 .map-container .leaflet-container {
-  background: transparent;
+  background: #000000;
 }
 
 .map-container .leaflet-control-attribution {
@@ -586,6 +586,7 @@ export default {
 }
 
 .map-container .leaflet-tile-pane {
-  opacity: 0.75;
+  opacity: 0.8;
+  filter: grayscale(1) invert(0.8);
 }
 </style>
