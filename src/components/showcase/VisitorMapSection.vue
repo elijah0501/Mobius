@@ -4,6 +4,9 @@
 
       <!-- Leaflet Map -->
       <div ref="mapContainer" class="map-container">
+        <!-- Top & bottom fade overlays -->
+        <div class="map-fade-top"></div>
+        <div class="map-fade-bottom"></div>
         <!-- Visitor Log Panel -->
         <div v-if="visitorLog.length > 0" class="visitor-log-panel">
           <div class="log-header">
@@ -85,20 +88,28 @@ export default {
       return `${Math.floor(seconds / 86400)}d ago`
     }
 
+    /** Small random jitter to prevent same-location markers from stacking vertically */
+    function jitter(val, range = 0.5) {
+      return val + (Math.random() - 0.5) * range
+    }
+
     /** Add a visitor marker to the map with animation + popup */
     function addVisitorMarker(lat, lon, isCurrent = false, delay = 0, info = null) {
       if (!map) return
       setTimeout(() => {
         if (!map) return
         let marker
+        // Current visitor uses exact coordinates; others get slight jitter to avoid overlap
+        const markerLat = isCurrent ? lat : jitter(lat)
+        const markerLon = isCurrent ? lon : jitter(lon)
         if (isCurrent) {
           const pulseIcon = L.divIcon({
             className: 'visitor-pulse-marker visitor-pulse-current',
             iconSize: [28, 28],
             iconAnchor: [14, 14]
           })
-          marker = L.marker([lat, lon], { icon: pulseIcon, zIndexOffset: 1000 }).addTo(map)
-          L.circleMarker([lat, lon], {
+          marker = L.marker([markerLat, markerLon], { icon: pulseIcon, zIndexOffset: 1000 }).addTo(map)
+          L.circleMarker([markerLat, markerLon], {
             radius: 30,
             fillColor: '#4a90e2',
             fillOpacity: 0.08,
@@ -112,7 +123,7 @@ export default {
             iconSize: [10, 10],
             iconAnchor: [5, 5]
           })
-          marker = L.marker([lat, lon], { icon: dotIcon }).addTo(map)
+          marker = L.marker([markerLat, markerLon], { icon: dotIcon }).addTo(map)
         }
         if (marker && info) {
           const popupHtml = `
@@ -120,7 +131,6 @@ export default {
               <div class="popup-location">${info.country || 'Unknown'}</div>
               ${info.region ? `<div class="popup-detail">${info.region}${info.city ? ', ' + info.city : ''}</div>` : ''}
               ${info.time ? `<div class="popup-time">${info.time}</div>` : ''}
-              ${isCurrent ? '<div class="popup-badge">📍 You</div>' : ''}
             </div>
           `
           marker.bindPopup(popupHtml, {
@@ -128,9 +138,6 @@ export default {
             closeButton: false,
             offset: [0, isCurrent ? -14 : -5]
           })
-          if (isCurrent) {
-            setTimeout(() => { if (marker && map) marker.openPopup() }, 300)
-          }
         }
       }, delay)
     }
@@ -475,6 +482,26 @@ export default {
   min-height: 450px;
   position: relative;
   background: #0d1117;
+}
+
+.map-fade-top,
+.map-fade-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 80px;
+  z-index: 500;
+  pointer-events: none;
+}
+
+.map-fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, #0a0a1a, transparent);
+}
+
+.map-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, #0a0a1a, transparent);
 }
 
 .map-placeholder {
