@@ -1,11 +1,7 @@
 <script setup>
 import { onMounted, onUnmounted, nextTick } from 'vue'
-import AboutSection from '@/components/showcase/AboutSection.vue'
-import SkillsSection from '@/components/showcase/SkillsSection.vue'
-import ProjectsSection from '@/components/showcase/ProjectsSection.vue'
-import PublicationsSection from '@/components/showcase/PublicationsSection.vue'
-import TimelineSection from '@/components/showcase/TimelineSection.vue'
 import BlogSection from '@/components/showcase/BlogSection.vue'
+import ProjectsSection from '@/components/showcase/ProjectsSection.vue'
 import VisitorMapSection from '@/components/showcase/VisitorMapSection.vue'
 import { handleGlassMove } from '@/composables/useGlassEffect'
 
@@ -42,12 +38,8 @@ onUnmounted(() => {
       <div class="bg-image"></div>
       <div class="bg-overlay"></div>
 
-      <AboutSection />
-      <SkillsSection />
-      <ProjectsSection />
-      <PublicationsSection />
-      <TimelineSection />
       <BlogSection />
+      <ProjectsSection />
       <VisitorMapSection />
     </div>
   </main>
