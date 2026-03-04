@@ -2,208 +2,288 @@
   <section class="showcase-section">
     <h2 class="section-title reveal">Visitor Globe</h2>
     <div class="section-title-bar reveal"></div>
-    <p class="section-subtitle reveal">See where you're visiting from</p>
+    <p class="section-subtitle reveal">
+      <template v-if="totalVisitors > 0">
+        {{ totalVisitors }} visitors from around the world
+      </template>
+      <template v-else>
+        Real-time visitor map
+      </template>
+    </p>
 
     <div class="glass-card visitor-card reveal">
       <!-- Visitor info bar -->
       <div class="visitor-header">
         <div class="visitor-icon">🌍</div>
         <div class="visitor-info">
-          <div v-if="visitor.loading" class="visitor-loading">
+          <div v-if="currentVisitor.loading" class="visitor-loading">
             <span class="loading-dot"></span>
             <span class="loading-text">Detecting your location...</span>
           </div>
-          <template v-else-if="!visitor.error">
-            <h3 class="visitor-country">{{ visitor.country }}</h3>
-            <p class="visitor-detail">{{ visitor.region }}<span v-if="visitor.city">, {{ visitor.city }}</span></p>
-            <p class="visitor-ip">IP: {{ visitor.ip }}</p>
+          <template v-else-if="!currentVisitor.error">
+            <h3 class="visitor-country">{{ currentVisitor.country }}</h3>
+            <p class="visitor-detail">
+              {{ currentVisitor.region }}<span v-if="currentVisitor.city">, {{ currentVisitor.city }}</span>
+            </p>
+            <p class="visitor-ip">IP: {{ maskIp(currentVisitor.ip) }}</p>
           </template>
           <div v-else class="visitor-error">
             <p>Location unavailable — your privacy tools may be blocking the request.</p>
           </div>
         </div>
+        <!-- Live counter badge -->
+        <div v-if="totalVisitors > 0" class="visitor-counter">
+          <span class="counter-dot"></span>
+          <span class="counter-text">{{ totalVisitors }}</span>
+        </div>
       </div>
 
       <!-- Leaflet Map -->
       <div ref="mapContainer" class="map-container">
-        <div v-if="visitor.loading" class="map-placeholder">
+        <div v-if="currentVisitor.loading" class="map-placeholder">
           <div class="map-loading-ring"></div>
         </div>
+      </div>
+
+      <!-- Firebase status notice -->
+      <div v-if="!firebaseActive" class="firebase-notice">
+        <span>📡 Configure Firebase in <code>src/firebase.js</code> to enable real visitor tracking</span>
       </div>
     </div>
   </section>
 </template>
 
-<script setup>
+<script>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { db, isFirebaseConfigured } from '@/firebase'
 
-const mapContainer = ref(null)
-let map = null
+let fbRef, fbPush, fbOnValue, fbQuery, fbOrderByChild, fbLimitToLast
 
-const visitor = ref({
-  country: null,
-  region: null,
-  city: null,
-  lat: null,
-  lon: null,
-  ip: null,
-  loading: true,
-  error: false
-})
+export default {
+  name: 'VisitorMapSection',
+  setup() {
+    const mapContainer = ref(null)
+    let map = null
+    let unsubscribe = null
 
-// Simulated worldwide visitor locations for visual effect
-const worldLocations = [
-  [40.71, -74.01],   // New York
-  [51.51, -0.13],    // London
-  [48.86, 2.35],     // Paris
-  [35.68, 139.69],   // Tokyo
-  [37.57, 126.98],   // Seoul
-  [-33.87, 151.21],  // Sydney
-  [55.76, 37.62],    // Moscow
-  [19.43, -99.13],   // Mexico City
-  [-23.55, -46.63],  // São Paulo
-  [28.61, 77.21],    // Delhi
-  [39.90, 116.40],   // Beijing
-  [1.35, 103.82],    // Singapore
-  [52.52, 13.40],    // Berlin
-  [41.01, 28.98],    // Istanbul
-  [30.04, 31.24],    // Cairo
-  [-1.29, 36.82],    // Nairobi
-  [34.05, -118.24],  // Los Angeles
-  [43.65, -79.38],   // Toronto
-  [-34.60, -58.38],  // Buenos Aires
-  [59.33, 18.07],    // Stockholm
-]
+    const firebaseActive = ref(isFirebaseConfigured)
+    const totalVisitors = ref(0)
+    const allVisitors = ref([])
 
-function initMap() {
-  if (!mapContainer.value) return
-
-  map = L.map(mapContainer.value, {
-    center: [25, 0],
-    zoom: 2,
-    zoomControl: false,
-    attributionControl: false,
-    scrollWheelZoom: false,
-    doubleClickZoom: false,
-    dragging: true,
-    minZoom: 2,
-    maxZoom: 8,
-    maxBounds: [[-85, -200], [85, 200]],
-    maxBoundsViscosity: 1.0
-  })
-
-  // Dark theme tile layer
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd',
-    maxZoom: 19
-  }).addTo(map)
-
-  // Add subtle label layer on top
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd',
-    maxZoom: 19,
-    opacity: 0.4
-  }).addTo(map)
-
-  // Add simulated visitor dots
-  worldLocations.forEach((coords, index) => {
-    setTimeout(() => {
-      if (!map) return
-      L.circleMarker(coords, {
-        radius: 3,
-        fillColor: '#4a90e2',
-        fillOpacity: 0.3,
-        stroke: false
-      }).addTo(map)
-    }, index * 80)
-  })
-}
-
-async function fetchVisitorLocation() {
-  try {
-    const res = await fetch('https://ipapi.co/json/')
-    if (!res.ok) throw new Error('API error')
-    const data = await res.json()
-
-    if (data.error) throw new Error(data.reason)
-
-    visitor.value = {
-      country: data.country_name,
-      region: data.region,
-      city: data.city,
-      lat: data.latitude,
-      lon: data.longitude,
-      ip: data.ip,
-      loading: false,
+    const currentVisitor = ref({
+      country: null,
+      region: null,
+      city: null,
+      lat: null,
+      lon: null,
+      ip: null,
+      loading: true,
       error: false
+    })
+
+    /** Mask IP for privacy: 192.168.1.100 → 192.168.*.* */
+    function maskIp(ip) {
+      if (!ip) return ''
+      const parts = ip.split('.')
+      if (parts.length === 4) {
+        return `${parts[0]}.${parts[1]}.*.*`
+      }
+      return ip.split(':').slice(0, 3).join(':') + '::**'
     }
 
-    if (map && data.latitude && data.longitude) {
-      // Add primary pulsing marker
-      const pulseIcon = L.divIcon({
-        className: 'visitor-pulse-marker',
-        iconSize: [24, 24],
-        iconAnchor: [12, 12]
-      })
-      L.marker([data.latitude, data.longitude], { icon: pulseIcon }).addTo(map)
-
-      // Add glowing circle around visitor
-      L.circleMarker([data.latitude, data.longitude], {
-        radius: 18,
-        fillColor: '#4a90e2',
-        fillOpacity: 0.08,
-        color: '#4a90e2',
-        weight: 1,
-        opacity: 0.2
-      }).addTo(map)
-
-      // Draw arc lines from some cities to visitor
-      const arcCities = worldLocations.slice(0, 8)
-      arcCities.forEach((city, i) => {
-        setTimeout(() => {
-          if (!map) return
-          const line = L.polyline([city, [data.latitude, data.longitude]], {
-            color: '#4a90e2',
-            weight: 0.8,
-            opacity: 0.15,
-            dashArray: '4 6'
-          })
-          line.addTo(map)
-        }, 1500 + i * 150)
-      })
-
-      // Fly to visitor location
+    /** Add a visitor marker to the map with animation */
+    function addVisitorMarker(lat, lon, isCurrent = false, delay = 0) {
+      if (!map) return
       setTimeout(() => {
         if (!map) return
-        map.flyTo([data.latitude, data.longitude], 5, {
-          duration: 2.5,
-          easeLinearity: 0.2
-        })
-      }, 500)
+        if (isCurrent) {
+          const pulseIcon = L.divIcon({
+            className: 'visitor-pulse-marker visitor-pulse-current',
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+          })
+          L.marker([lat, lon], { icon: pulseIcon }).addTo(map)
+          L.circleMarker([lat, lon], {
+            radius: 22,
+            fillColor: '#4a90e2',
+            fillOpacity: 0.06,
+            color: '#4a90e2',
+            weight: 1,
+            opacity: 0.15
+          }).addTo(map)
+        } else {
+          const dotIcon = L.divIcon({
+            className: 'visitor-pulse-marker visitor-pulse-small',
+            iconSize: [10, 10],
+            iconAnchor: [5, 5]
+          })
+          L.marker([lat, lon], { icon: dotIcon }).addTo(map)
+        }
+      }, delay)
     }
-  } catch {
-    visitor.value = {
-      ...visitor.value,
-      loading: false,
-      error: true
+
+    /** Draw a dashed line from a past visitor to the current visitor */
+    function drawConnectionLine(fromLat, fromLon, toLat, toLon, delay = 0) {
+      setTimeout(() => {
+        if (!map) return
+        L.polyline([[fromLat, fromLon], [toLat, toLon]], {
+          color: '#4a90e2',
+          weight: 0.7,
+          opacity: 0.1,
+          dashArray: '4 8'
+        }).addTo(map)
+      }, delay)
+    }
+
+    function initMap() {
+      if (!mapContainer.value) return
+      map = L.map(mapContainer.value, {
+        center: [25, 0],
+        zoom: 2,
+        zoomControl: false,
+        attributionControl: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        dragging: true,
+        minZoom: 2,
+        maxZoom: 8,
+        maxBounds: [[-85, -200], [85, 200]],
+        maxBoundsViscosity: 1.0
+      })
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(map)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd',
+        maxZoom: 19,
+        opacity: 0.35
+      }).addTo(map)
+    }
+
+    /** Record visitor to Firebase */
+    async function recordVisitor(data) {
+      if (!isFirebaseConfigured || !db) return
+      try {
+        const visitorsRef = fbRef(db, 'visitors')
+        await fbPush(visitorsRef, {
+          lat: data.latitude,
+          lon: data.longitude,
+          country: data.country_name,
+          region: data.region || '',
+          city: data.city || '',
+          timestamp: Date.now()
+        })
+      } catch {
+        // Silently fail — visitor tracking is non-critical
+      }
+    }
+
+    /** Subscribe to real visitors from Firebase */
+    function subscribeToVisitors() {
+      if (!isFirebaseConfigured || !db) return
+      const visitorsRef = fbRef(db, 'visitors')
+      const recentQuery = fbQuery(visitorsRef, fbOrderByChild('timestamp'), fbLimitToLast(200))
+      unsubscribe = fbOnValue(recentQuery, (snapshot) => {
+        const data = snapshot.val()
+        if (!data) return
+        const visitors = Object.values(data)
+        totalVisitors.value = visitors.length
+        allVisitors.value = visitors
+        visitors.forEach((v, i) => {
+          if (v.lat && v.lon) {
+            addVisitorMarker(v.lat, v.lon, false, i * 40)
+          }
+        })
+      })
+    }
+
+    async function fetchCurrentVisitor() {
+      try {
+        const res = await fetch('https://ipapi.co/json/')
+        if (!res.ok) throw new Error('API error')
+        const data = await res.json()
+        if (data.error) throw new Error(data.reason)
+
+        currentVisitor.value = {
+          country: data.country_name,
+          region: data.region,
+          city: data.city,
+          lat: data.latitude,
+          lon: data.longitude,
+          ip: data.ip,
+          loading: false,
+          error: false
+        }
+
+        await recordVisitor(data)
+
+        if (map && data.latitude && data.longitude) {
+          addVisitorMarker(data.latitude, data.longitude, true, 200)
+
+          if (allVisitors.value.length > 0) {
+            allVisitors.value.slice(0, 12).forEach((v, i) => {
+              if (v.lat && v.lon) {
+                drawConnectionLine(v.lat, v.lon, data.latitude, data.longitude, 1200 + i * 120)
+              }
+            })
+          }
+
+          setTimeout(() => {
+            if (!map) return
+            map.flyTo([data.latitude, data.longitude], 5, {
+              duration: 2.5,
+              easeLinearity: 0.2
+            })
+          }, 600)
+        }
+      } catch {
+        currentVisitor.value = {
+          ...currentVisitor.value,
+          loading: false,
+          error: true
+        }
+      }
+    }
+
+    onMounted(async () => {
+      await nextTick()
+
+      // Load Firebase database functions dynamically
+      if (isFirebaseConfigured) {
+        const dbModule = await import('firebase/database')
+        fbRef = dbModule.ref
+        fbPush = dbModule.push
+        fbOnValue = dbModule.onValue
+        fbQuery = dbModule.query
+        fbOrderByChild = dbModule.orderByChild
+        fbLimitToLast = dbModule.limitToLast
+      }
+
+      initMap()
+      subscribeToVisitors()
+      fetchCurrentVisitor()
+    })
+
+    onUnmounted(() => {
+      if (unsubscribe) unsubscribe()
+      if (map) {
+        map.remove()
+        map = null
+      }
+    })
+
+    return {
+      mapContainer,
+      currentVisitor,
+      firebaseActive,
+      totalVisitors,
+      maskIp
     }
   }
 }
-
-onMounted(async () => {
-  await nextTick()
-  initMap()
-  fetchVisitorLocation()
-})
-
-onUnmounted(() => {
-  if (map) {
-    map.remove()
-    map = null
-  }
-})
 </script>
 
 <style scoped>
@@ -250,6 +330,33 @@ onUnmounted(() => {
   color: rgba(255, 255, 255, 0.25);
   font-family: 'SF Mono', 'Fira Code', monospace;
   margin: 0;
+}
+
+.visitor-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(74, 144, 226, 0.12);
+  border: 1px solid rgba(74, 144, 226, 0.2);
+  flex-shrink: 0;
+}
+
+.counter-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+  animation: dot-pulse 2s ease-in-out infinite;
+}
+
+.counter-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  font-variant-numeric: tabular-nums;
 }
 
 .visitor-loading {
@@ -311,6 +418,26 @@ onUnmounted(() => {
   to { transform: rotate(360deg); }
 }
 
+.firebase-notice {
+  padding: 0.8rem 2rem;
+  background: rgba(255, 180, 50, 0.06);
+  border-top: 1px solid rgba(255, 180, 50, 0.1);
+  text-align: center;
+}
+
+.firebase-notice span {
+  font-size: 0.8rem;
+  color: rgba(255, 200, 100, 0.6);
+}
+
+.firebase-notice code {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+}
+
 @media (max-width: 768px) {
   .map-container {
     height: 320px;
@@ -318,6 +445,11 @@ onUnmounted(() => {
 
   .visitor-header {
     padding: 1.2rem 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .visitor-counter {
+    margin-left: auto;
   }
 }
 </style>
@@ -328,7 +460,7 @@ onUnmounted(() => {
   position: relative;
 }
 
-.visitor-pulse-marker::before {
+.visitor-pulse-current::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -345,7 +477,7 @@ onUnmounted(() => {
   z-index: 2;
 }
 
-.visitor-pulse-marker::after {
+.visitor-pulse-current::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -356,6 +488,33 @@ onUnmounted(() => {
   border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: visitor-ring-pulse 2s ease-out infinite;
+}
+
+.visitor-pulse-small::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: #4a90e2;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
+  opacity: 0.5;
+  z-index: 1;
+  animation: visitor-dot-appear 0.5s ease-out;
+}
+
+@keyframes visitor-dot-appear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  to {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 @keyframes visitor-ring-pulse {
@@ -371,7 +530,6 @@ onUnmounted(() => {
   }
 }
 
-/* Override Leaflet default styles for glass theme */
 .map-container .leaflet-container {
   background: #0d1117;
 }

@@ -33,49 +33,19 @@ a,
    Showcase Container
    ============================== */
 .showcase-container {
-  background: linear-gradient(
-    180deg,
-    #0a0a1a 0%,
-    #0d1126 8%,
-    #0f1535 20%,
-    #111133 35%,
-    #0f1535 50%,
-    #0d1126 65%,
-    #0f1535 80%,
-    #0a0e1e 92%,
-    #000000 100%
-  );
   position: relative;
   overflow: hidden;
-  padding: 5rem 0 3rem;
+  padding: 80px 0 3rem; /* 80px = navbar height */
+  min-height: 100vh;
 }
 
-/* Ambient floating blobs */
-.showcase-container::before,
-.showcase-container::after {
-  content: '';
+/* Ambient floating orbs — uses extra elements inside .showcase-container */
+.showcase-container .ambient-orb {
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
   filter: blur(100px);
-}
-
-.showcase-container::before {
-  top: 8%;
-  left: -8%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(74, 144, 226, 0.07) 0%, transparent 70%);
-  animation: blob-drift 25s ease-in-out infinite;
-}
-
-.showcase-container::after {
-  bottom: 12%;
-  right: -8%;
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(160, 80, 220, 0.05) 0%, transparent 70%);
-  animation: blob-drift 30s ease-in-out infinite reverse;
+  z-index: 0;
 }
 
 @keyframes blob-drift {

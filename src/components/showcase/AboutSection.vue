@@ -6,15 +6,6 @@
 
     <div class="glass-card about-card">
       <div class="about-content">
-        <div class="about-left">
-          <div class="placeholder-avatar"></div>
-          <div class="about-social">
-            <span class="placeholder-tag">GitHub</span>
-            <span class="placeholder-tag">LinkedIn</span>
-            <span class="placeholder-tag">Scholar</span>
-            <span class="placeholder-tag">Email</span>
-          </div>
-        </div>
         <div class="about-info">
           <div class="placeholder-text name" style="width: 220px; height: 2rem; margin-bottom: 0.6rem;"></div>
           <div class="placeholder-text tagline" style="width: 300px; height: 1.1rem; margin-bottom: 1.5rem;"></div>
@@ -36,6 +27,12 @@
               <div class="placeholder-text" style="width: 200px; height: 0.9rem;"></div>
             </div>
           </div>
+          <div class="about-social">
+            <span class="placeholder-tag">GitHub</span>
+            <span class="placeholder-tag">LinkedIn</span>
+            <span class="placeholder-tag">Scholar</span>
+            <span class="placeholder-tag">Email</span>
+          </div>
         </div>
       </div>
     </div>
@@ -51,28 +48,20 @@
 .about-content {
   display: flex;
   align-items: flex-start;
-  gap: 3rem;
-}
-
-.about-left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.2rem;
-  flex-shrink: 0;
-}
-
-.about-social {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  justify-content: center;
-  max-width: 160px;
 }
 
 .about-info {
   flex: 1;
   min-width: 0;
+}
+
+.about-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.8rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .about-meta {
@@ -114,6 +103,10 @@
 
   .meta-label {
     width: auto;
+  }
+
+  .about-social {
+    justify-content: center;
   }
 }
 </style>
