@@ -171,7 +171,7 @@ export default {
         attributionControl: false,
         scrollWheelZoom: false,
         doubleClickZoom: false,
-        dragging: true,
+        dragging: false,
         minZoom: 2,
         maxZoom: 8,
         maxBounds: [[-85, -200], [85, 200]],
@@ -514,6 +514,27 @@ export default {
   min-height: 520px;
   position: relative;
   background: #0d1117;
+}
+
+.map-container::before,
+.map-container::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 88px;
+  pointer-events: none;
+  z-index: 500;
+}
+
+.map-container::before {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(13, 17, 23, 0), rgba(13, 17, 23, 0.95));
+}
+
+.map-container::after {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(13, 17, 23, 0), rgba(13, 17, 23, 0.95));
 }
 
 .map-placeholder {
