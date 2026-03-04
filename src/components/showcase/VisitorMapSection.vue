@@ -1,5 +1,5 @@
 <template>
-  <section class="showcase-section">
+  <section class="showcase-section visitor-map-section">
     <div class="glass-card visitor-card reveal">
 
       <!-- Leaflet Map -->
@@ -330,11 +330,19 @@ export default {
 </script>
 
 <style scoped>
+.visitor-map-section {
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .visitor-card {
-  max-width: 1000px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   padding: 0;
   overflow: hidden;
+  border-radius: 0;
 }
 
 /* Visitor Log Panel */
@@ -470,7 +478,8 @@ export default {
 
 .map-container {
   width: 100%;
-  height: 450px;
+  height: 55vh;
+  min-height: 450px;
   position: relative;
   background: #0d1117;
 }
@@ -519,7 +528,8 @@ export default {
 
 @media (max-width: 768px) {
   .map-container {
-    height: 320px;
+    height: 45vh;
+    min-height: 320px;
   }
 
   .visitor-log-panel {

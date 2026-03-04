@@ -30,6 +30,7 @@ import { getDatabase } from 'firebase/database'
 const firebaseConfig = {
   apiKey: "AIzaSyBbHRLDC8JH1rKJqDdL89Szac_Df6pB1So",
   authDomain: "mobius-f1994.firebaseapp.com",
+  databaseURL: "https://mobius-f1994-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "mobius-f1994",
   storageBucket: "mobius-f1994.firebasestorage.app",
   messagingSenderId: "347182841628",
