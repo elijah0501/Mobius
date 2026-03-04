@@ -1,6 +1,7 @@
 <template>
   <footer class="footer">
     <div class="footer-content">
+
       <div class="copyright">
         <p>&copy; 2026 Möbius. All Rights Reserved.</p>
       </div>
@@ -9,44 +10,40 @@
 </template>
 
 <script setup>
-// footer logic
+// 这里可以添加组件的逻辑
 </script>
 
 <style scoped>
 .footer {
-  position: relative;
-  background-color: #000000;
-  width: 100%;
+  background-color: black;
+  height: 200px;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .footer-content {
-  background-color: #000000;
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem 0 2.5rem;
+  gap: 40px;
 }
 
 .copyright {
+  color: rgb(201, 201, 201);
   text-align: center;
 }
 
 .copyright p {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: 0.5px;
-  color: rgba(160, 160, 160, 0.5);
 }
 
+/* 响应式设计 */
 @media (max-width: 768px) {
-  .footer-gradient {
-    height: 120px;
-  }
 
   .copyright p {
     font-size: 12px;

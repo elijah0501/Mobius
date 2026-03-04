@@ -37,28 +37,25 @@ onUnmounted(() => {
 
 <template>
   <main>
-    <!-- Fixed background image -->
-    <div class="bg-image"></div>
-    <div class="bg-overlay"></div>
-
     <div class="showcase-container" @mousemove="handleGlassMove">
+      <!-- Fixed background image with reduced visibility -->
+      <div class="bg-image"></div>
+      <div class="bg-overlay"></div>
+
       <AboutSection />
       <SkillsSection />
       <ProjectsSection />
       <PublicationsSection />
       <TimelineSection />
       <BlogSection />
+      <VisitorMapSection />
     </div>
-
-    <!-- Visitor map: overlaid on background, outside showcase -->
-    <VisitorMapSection />
   </main>
 </template>
 
 <style scoped>
 main {
   width: 100%;
-  position: relative;
 }
 
 .bg-image {
@@ -71,8 +68,7 @@ main {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.22;
-  filter: blur(2px);
+  opacity: 0.12;
   z-index: 0;
   pointer-events: none;
 }
@@ -85,11 +81,10 @@ main {
   height: 100vh;
   background: linear-gradient(
     180deg,
-    rgba(10, 10, 26, 0.5) 0%,
-    rgba(10, 10, 26, 0.2) 25%,
-    rgba(10, 10, 26, 0.35) 60%,
-    rgba(10, 10, 26, 0.5) 80%,
-    rgba(0, 0, 0, 0.7) 100%
+    rgba(10, 10, 26, 0.6) 0%,
+    rgba(10, 10, 26, 0.3) 30%,
+    rgba(10, 10, 26, 0.5) 70%,
+    rgba(0, 0, 0, 0.9) 100%
   );
   z-index: 0;
   pointer-events: none;
