@@ -1,45 +1,38 @@
 <template>
   <section class="showcase-section">
-    <h2 class="section-title reveal">Visitor Globe</h2>
-    <div class="section-title-bar reveal"></div>
-    <p class="section-subtitle reveal">
-      <template v-if="totalVisitors > 0">
-        {{ totalVisitors }} visitors from around the world
-      </template>
-      <template v-else>
-        Real-time visitor map
-      </template>
-    </p>
-
     <div class="glass-card visitor-card reveal">
-      <!-- Visitor info bar -->
-      <div class="visitor-header">
-        <div class="visitor-icon">🌍</div>
-        <div class="visitor-info">
+
+      <!-- Leaflet Map -->
+      <div ref="mapContainer" class="map-container">
+        <!-- Floating Visitor Info Overlay -->
+        <div class="floating-visitor-overlay">
           <div v-if="currentVisitor.loading" class="visitor-loading">
             <span class="loading-dot"></span>
             <span class="loading-text">Detecting your location...</span>
           </div>
           <template v-else-if="!currentVisitor.error">
-            <h3 class="visitor-country">{{ currentVisitor.country }}</h3>
-            <p class="visitor-detail">
-              {{ currentVisitor.region }}<span v-if="currentVisitor.city">, {{ currentVisitor.city }}</span>
-            </p>
-            <p class="visitor-ip">IP: {{ maskIp(currentVisitor.ip) }}</p>
+            <div class="overlay-content flash-effect">
+              <div class="visitor-icon">🌍</div>
+              <div class="visitor-info-text">
+                <h3 class="visitor-country">{{ currentVisitor.country }}</h3>
+                <p class="visitor-detail">
+                  {{ currentVisitor.region }}<span v-if="currentVisitor.city">, {{ currentVisitor.city }}</span>
+                </p>
+                <p class="visitor-ip">IP: {{ maskIp(currentVisitor.ip) }}</p>
+              </div>
+              <div v-if="totalVisitors > 0" class="visitor-counter">
+                <span class="counter-dot"></span>
+                <span class="counter-text">{{ totalVisitors }}</span>
+              </div>
+            </div>
           </template>
           <div v-else class="visitor-error">
-            <p>Location unavailable — your privacy tools may be blocking the request.</p>
+            <div class="overlay-content">
+              <p>Location unavailable — your privacy tools may be blocking the request.</p>
+            </div>
           </div>
         </div>
-        <!-- Live counter badge -->
-        <div v-if="totalVisitors > 0" class="visitor-counter">
-          <span class="counter-dot"></span>
-          <span class="counter-text">{{ totalVisitors }}</span>
-        </div>
-      </div>
 
-      <!-- Leaflet Map -->
-      <div ref="mapContainer" class="map-container">
         <div v-if="currentVisitor.loading" class="map-placeholder">
           <div class="map-loading-ring"></div>
         </div>
@@ -294,21 +287,44 @@ export default {
   overflow: hidden;
 }
 
-.visitor-header {
+.floating-visitor-overlay {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.overlay-content {
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  align-items: center;
+  gap: 1.2rem;
+  background: rgba(13, 17, 23, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: auto;
+}
+
+.flash-effect {
+  animation: info-flash 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes info-flash {
+  0% { box-shadow: 0 0 10px rgba(74, 144, 226, 0.1); opacity: 0.85; transform: scale(0.98); }
+  100% { box-shadow: 0 0 25px rgba(74, 144, 226, 0.6); opacity: 1; transform: scale(1.02); }
 }
 
 .visitor-icon {
-  font-size: 2rem;
+  font-size: 2.2rem;
   line-height: 1;
   flex-shrink: 0;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
 }
 
-.visitor-info {
+.visitor-info-text {
   flex: 1;
 }
 
@@ -443,9 +459,16 @@ export default {
     height: 320px;
   }
 
-  .visitor-header {
-    padding: 1.2rem 1.5rem;
+  .floating-visitor-overlay {
+    top: 15px;
+    left: 15px;
+    right: 15px;
+  }
+
+  .overlay-content {
+    padding: 0.8rem 1rem;
     flex-wrap: wrap;
+    gap: 0.8rem;
   }
 
   .visitor-counter {
