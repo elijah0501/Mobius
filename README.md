@@ -52,4 +52,4 @@ Ideas loop here forever — never quite beginning, never quite ending.
 
   <br>
 
-  Made with curiosity in Auckland · ∞
+  Made with curiosity in Auckland
