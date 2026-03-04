@@ -273,13 +273,6 @@ export default {
             })
           }
 
-          setTimeout(() => {
-            if (!map) return
-            map.flyTo([data.latitude, data.longitude], 5, {
-              duration: 2.5,
-              easeLinearity: 0.2
-            })
-          }, 600)
         }
       } catch {
         currentVisitor.value = {
