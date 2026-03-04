@@ -15,7 +15,7 @@
 
 <style scoped>
 .footer {
-  background-color: black;
+  background: linear-gradient(to bottom, transparent, black 50%);
   height: 200px;
   display: flex;
   align-items: center;
