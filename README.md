@@ -41,7 +41,6 @@ Ideas loop here forever — never quite beginning, never quite ending.
   
   ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat&logo=pytorch&logoColor=white)
 
-  <br>
 ---
 
   <!-- ## Writings   -->
