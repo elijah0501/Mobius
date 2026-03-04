@@ -25,7 +25,6 @@
  */
 
 import { initializeApp } from 'firebase/app'
-import { getAnalytics } from "firebase/analytics";
 import { getDatabase } from 'firebase/database'
 
 const firebaseConfig = {
@@ -52,9 +51,8 @@ let analytics = null
 
 if (isFirebaseConfigured) {
   app = initializeApp(firebaseConfig)
-  analytics = getAnalytics(app)
   db = getDatabase(app)
 }
 
-export { db, analytics }
+export { db }
 export default app
