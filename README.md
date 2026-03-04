@@ -10,16 +10,18 @@ Ideas loop here forever — never quite beginning, never quite ending.
 
   ![Profile](https://img.shields.io/badge/profile-Elijah-b)
   ![GitHub](https://img.shields.io/badge/github-Möbius-blue?logo=github)
+  ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=elijah0501.elijah0501.github.io&right_color=red&left_text=∞%20loops%20so%20far)
 
 </div>
+<br>
 
-## Focus Areas
+## Research Areas
 
 - Computer Vision
-- Action Recognition
-- Object Detection
+  - Action Recognition
+  - Object Detection
 
-## Tech Surface
+## Tech Stack
 - Programming
   
   ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
@@ -41,15 +43,8 @@ Ideas loop here forever — never quite beginning, never quite ending.
   
   ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat&logo=pytorch&logoColor=white)
 
----
-
   <!-- ## Writings   -->
   <!-- Coming soon — thoughts, experiments, and rabbit holes will appear here -->
-
-  ## Visitor Ripple
-
-  ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=elijah0501.elijah0501.github.io&right_color=red&left_text=∞%20loops%20so%20far)
-
-  <br>
-
+  
+  ---
   Made with curiosity in Auckland
