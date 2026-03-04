@@ -49,6 +49,8 @@ onUnmounted(() => {
       <TimelineSection />
       <BlogSection />
       <VisitorMapSection />
+      <!-- Bottom fade to black -->
+      <div class="bottom-fade"></div>
     </div>
   </main>
 </template>
