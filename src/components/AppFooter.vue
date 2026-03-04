@@ -16,7 +16,7 @@
 <style scoped>
 .footer {
   background: linear-gradient(to bottom, transparent, black 50%);
-  height: 200px;
+  height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,7 +32,7 @@
 }
 
 .copyright {
-  color: rgb(201, 201, 201);
+  color: rgb(235, 235, 235);
   text-align: center;
 }
 
