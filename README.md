@@ -48,7 +48,7 @@ Ideas loop here forever — never quite beginning, never quite ending.
 
   ## Visitor Ripple
 
-  ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=elijah0501.elijah0501.github.io&right_color=36454F&left_text=∞%20loops%20so%20far)
+  ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=elijah0501.elijah0501.github.io&right_color=red&left_text=∞%20loops%20so%20far)
 
   <br>
 
