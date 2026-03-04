@@ -25,18 +25,19 @@
  */
 
 import { initializeApp } from 'firebase/app'
+import { getAnalytics } from "firebase/analytics";
 import { getDatabase } from 'firebase/database'
 
 const firebaseConfig = {
-  // ⬇️ Replace these with your Firebase project credentials
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_PROJECT.firebaseapp.com',
-  databaseURL: 'https://YOUR_PROJECT-default-rtdb.firebaseio.com',
-  projectId: 'YOUR_PROJECT',
-  storageBucket: 'YOUR_PROJECT.appspot.com',
-  messagingSenderId: 'YOUR_SENDER_ID',
-  appId: 'YOUR_APP_ID'
-}
+  apiKey: "AIzaSyBbHRLDC8JH1rKJqDdL89Szac_Df6pB1So",
+  authDomain: "mobius-f1994.firebaseapp.com",
+  projectId: "mobius-f1994",
+  storageBucket: "mobius-f1994.firebasestorage.app",
+  messagingSenderId: "347182841628",
+  appId: "1:347182841628:web:4c8daca942d279f009c4d9",
+  measurementId: "G-PXE89LH28H"
+};
+
 
 /**
  * Check if Firebase is configured (not placeholder values)
@@ -47,11 +48,13 @@ export const isFirebaseConfigured =
 
 let app = null
 let db = null
+let analytics = null
 
 if (isFirebaseConfigured) {
   app = initializeApp(firebaseConfig)
+  analytics = getAnalytics(app)
   db = getDatabase(app)
 }
 
-export { db }
+export { db, analytics }
 export default app
