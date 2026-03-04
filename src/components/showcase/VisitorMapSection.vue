@@ -85,11 +85,22 @@ export default {
       return `${Math.floor(seconds / 86400)}d ago`
     }
 
+    /** Normalize coordinates to numeric lat/lon pair */
+    function normalizePoint(lat, lon) {
+      const parsedLat = Number(lat)
+      const parsedLon = Number(lon)
+      if (!Number.isFinite(parsedLat) || !Number.isFinite(parsedLon)) return null
+      return [parsedLat, parsedLon]
+    }
+
     /** Add a visitor marker to the map with animation + popup */
     function addVisitorMarker(lat, lon, isCurrent = false, delay = 0, info = null) {
       if (!map) return
       setTimeout(() => {
         if (!map) return
+        const point = normalizePoint(lat, lon)
+        if (!point) return
+
         let marker
         if (isCurrent) {
           const pulseIcon = L.divIcon({
@@ -97,8 +108,8 @@ export default {
             iconSize: [28, 28],
             iconAnchor: [14, 14]
           })
-          marker = L.marker([lat, lon], { icon: pulseIcon, zIndexOffset: 1000 }).addTo(map)
-          L.circleMarker([lat, lon], {
+          marker = L.marker(point, { icon: pulseIcon, zIndexOffset: 1000 }).addTo(map)
+          L.circleMarker(point, {
             radius: 30,
             fillColor: '#4a90e2',
             fillOpacity: 0.08,
@@ -112,7 +123,7 @@ export default {
             iconSize: [10, 10],
             iconAnchor: [5, 5]
           })
-          marker = L.marker([lat, lon], { icon: dotIcon }).addTo(map)
+          marker = L.marker(point, { icon: dotIcon }).addTo(map)
         }
         if (marker && info) {
           const popupHtml = `
@@ -138,7 +149,11 @@ export default {
     function drawConnectionLine(fromLat, fromLon, toLat, toLon, delay = 0) {
       setTimeout(() => {
         if (!map) return
-        L.polyline([[fromLat, fromLon], [toLat, toLon]], {
+        const fromPoint = normalizePoint(fromLat, fromLon)
+        const toPoint = normalizePoint(toLat, toLon)
+        if (!fromPoint || !toPoint) return
+
+        L.polyline([fromPoint, toPoint], {
           color: '#4a90e2',
           weight: 0.7,
           opacity: 0.1,
@@ -495,8 +510,8 @@ export default {
 
 .map-container {
   width: 100%;
-  height: 55vh;
-  min-height: 450px;
+  height: 65vh;
+  min-height: 520px;
   position: relative;
   background: #0d1117;
 }
@@ -545,8 +560,8 @@ export default {
 
 @media (max-width: 768px) {
   .map-container {
-    height: 45vh;
-    min-height: 320px;
+    height: 52vh;
+    min-height: 380px;
   }
 
   .visitor-log-panel {
