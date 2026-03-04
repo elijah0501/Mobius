@@ -1,19 +1,11 @@
 <template>
-  <section class="showcase-section">
-    <h2 class="section-title reveal">Visitor Globe</h2>
-    <div class="section-title-bar reveal"></div>
-    <p class="section-subtitle reveal">
-      <template v-if="totalVisitors > 0">
-        {{ totalVisitors }} visitors from around the world
-      </template>
-      <template v-else>
-        Real-time visitor map
-      </template>
-    </p>
+  <section class="visitor-section">
+    <!-- Top gradient: fades content above into the map -->
+    <div class="visitor-fade-top"></div>
 
-    <div class="glass-card visitor-card reveal">
-      <!-- Visitor info bar -->
-      <div class="visitor-header">
+    <!-- Floating info overlay -->
+    <div class="visitor-info-overlay reveal">
+      <div class="visitor-info-inner">
         <div class="visitor-icon">🌍</div>
         <div class="visitor-info">
           <div v-if="currentVisitor.loading" class="visitor-loading">
@@ -28,28 +20,29 @@
             <p class="visitor-ip">IP: {{ maskIp(currentVisitor.ip) }}</p>
           </template>
           <div v-else class="visitor-error">
-            <p>Location unavailable — your privacy tools may be blocking the request.</p>
+            <p>Location unavailable</p>
           </div>
         </div>
-        <!-- Live counter badge -->
         <div v-if="totalVisitors > 0" class="visitor-counter">
           <span class="counter-dot"></span>
           <span class="counter-text">{{ totalVisitors }}</span>
         </div>
       </div>
-
-      <!-- Leaflet Map -->
-      <div ref="mapContainer" class="map-container">
-        <div v-if="currentVisitor.loading" class="map-placeholder">
-          <div class="map-loading-ring"></div>
-        </div>
-      </div>
-
-      <!-- Firebase status notice -->
+      <!-- Firebase notice -->
       <div v-if="!firebaseActive" class="firebase-notice">
         <span>📡 Configure Firebase in <code>src/firebase.js</code> to enable real visitor tracking</span>
       </div>
     </div>
+
+    <!-- Full-width map -->
+    <div ref="mapContainer" class="map-container">
+      <div v-if="currentVisitor.loading" class="map-placeholder">
+        <div class="map-loading-ring"></div>
+      </div>
+    </div>
+
+    <!-- Bottom gradient: fades map into footer -->
+    <div class="visitor-fade-bottom"></div>
   </section>
 </template>
 
@@ -287,23 +280,65 @@ export default {
 </script>
 
 <style scoped>
-.visitor-card {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0;
-  overflow: hidden;
+.visitor-section {
+  position: relative;
+  width: 100%;
+  z-index: 1;
 }
 
-.visitor-header {
+/* Top gradient: blends content above into the map */
+.visitor-fade-top {
+  position: relative;
+  height: 160px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(13, 17, 23, 0.4) 40%,
+    rgba(13, 17, 23, 0.8) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Bottom gradient: blends map into footer */
+.visitor-fade-bottom {
+  position: relative;
+  height: 120px;
+  margin-top: -120px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Floating info overlay on top of map */
+.visitor-info-overlay {
+  position: relative;
+  z-index: 4;
+  max-width: 600px;
+  margin: -60px auto 0;
+  padding: 0 2rem;
+}
+
+.visitor-info-inner {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.2rem 1.5rem;
+  background: rgba(10, 12, 20, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .visitor-icon {
-  font-size: 2rem;
+  font-size: 1.8rem;
   line-height: 1;
   flex-shrink: 0;
 }
@@ -313,21 +348,21 @@ export default {
 }
 
 .visitor-country {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
-  margin: 0 0 0.2rem 0;
-}
-
-.visitor-detail {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
   margin: 0 0 0.15rem 0;
 }
 
+.visitor-detail {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0 0 0.1rem 0;
+}
+
 .visitor-ip {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.2);
   font-family: 'SF Mono', 'Fira Code', monospace;
   margin: 0;
 }
@@ -336,16 +371,16 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.35rem 0.9rem;
+  padding: 0.3rem 0.8rem;
   border-radius: 999px;
-  background: rgba(74, 144, 226, 0.12);
-  border: 1px solid rgba(74, 144, 226, 0.2);
+  background: rgba(74, 144, 226, 0.1);
+  border: 1px solid rgba(74, 144, 226, 0.15);
   flex-shrink: 0;
 }
 
 .counter-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: #4ade80;
   box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
@@ -353,9 +388,9 @@ export default {
 }
 
 .counter-text {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
   font-variant-numeric: tabular-nums;
 }
 
@@ -379,21 +414,22 @@ export default {
 }
 
 .loading-text {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .visitor-error p {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.85rem;
   margin: 0;
 }
 
 .map-container {
   width: 100%;
-  height: 450px;
+  height: 500px;
   position: relative;
-  background: #0d1117;
+  background: transparent;
+  margin-top: -20px;
 }
 
 .map-placeholder {
@@ -419,32 +455,43 @@ export default {
 }
 
 .firebase-notice {
-  padding: 0.8rem 2rem;
-  background: rgba(255, 180, 50, 0.06);
-  border-top: 1px solid rgba(255, 180, 50, 0.1);
+  padding: 0.6rem 1rem;
+  margin-top: 0.8rem;
+  background: rgba(255, 180, 50, 0.05);
+  border: 1px solid rgba(255, 180, 50, 0.08);
+  border-radius: 10px;
   text-align: center;
 }
 
 .firebase-notice span {
-  font-size: 0.8rem;
-  color: rgba(255, 200, 100, 0.6);
+  font-size: 0.75rem;
+  color: rgba(255, 200, 100, 0.5);
 }
 
 .firebase-notice code {
-  background: rgba(255, 255, 255, 0.06);
-  padding: 0.15rem 0.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.1rem 0.35rem;
   border-radius: 4px;
   font-family: 'SF Mono', 'Fira Code', monospace;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
 }
 
 @media (max-width: 768px) {
   .map-container {
-    height: 320px;
+    height: 380px;
   }
 
-  .visitor-header {
-    padding: 1.2rem 1.5rem;
+  .visitor-fade-top {
+    height: 100px;
+  }
+
+  .visitor-info-overlay {
+    margin-top: -40px;
+    padding: 0 1rem;
+  }
+
+  .visitor-info-inner {
+    padding: 1rem 1.2rem;
     flex-wrap: wrap;
   }
 
@@ -531,7 +578,7 @@ export default {
 }
 
 .map-container .leaflet-container {
-  background: #0d1117;
+  background: transparent;
 }
 
 .map-container .leaflet-control-attribution {
@@ -539,6 +586,6 @@ export default {
 }
 
 .map-container .leaflet-tile-pane {
-  opacity: 0.85;
+  opacity: 0.75;
 }
 </style>
