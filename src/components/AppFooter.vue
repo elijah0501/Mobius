@@ -32,7 +32,7 @@
 }
 
 .copyright {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgb(201, 201, 201);
   text-align: center;
 }
 
