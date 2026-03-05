@@ -375,6 +375,21 @@ export default {
   padding: 0;
   overflow: hidden;
   border-radius: 0;
+  position: relative;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.95) 8%,
+    rgba(0, 0, 0, 0.95) 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.95) 8%,
+    rgba(0, 0, 0, 0.95) 92%,
+    transparent 100%
+  );
 }
 
 /* Visitor Log Panel */
@@ -514,27 +529,6 @@ export default {
   min-height: 520px;
   position: relative;
   background: #0d1117;
-}
-
-.map-container::before,
-.map-container::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 88px;
-  pointer-events: none;
-  z-index: 500;
-}
-
-.map-container::before {
-  top: 0;
-  background: linear-gradient(to bottom, rgba(13, 17, 23, 0), rgba(13, 17, 23, 0.95));
-}
-
-.map-container::after {
-  bottom: 0;
-  background: linear-gradient(to top, rgba(13, 17, 23, 0), rgba(13, 17, 23, 0.95));
 }
 
 .map-placeholder {
