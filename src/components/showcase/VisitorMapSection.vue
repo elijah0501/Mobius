@@ -5,7 +5,7 @@
       <!-- Leaflet Map -->
       <div ref="mapContainer" class="map-container">
         <!-- Visitor Log Panel -->
-        <div v-if="visitorLog.length > 0" class="visitor-log-panel">
+        <!-- <div v-if="visitorLog.length > 0" class="visitor-log-panel">
           <div class="log-header">
             <span class="log-dot"></span>
             <span class="log-title">Visitors</span>
@@ -20,7 +20,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <div v-if="currentVisitor.loading" class="map-placeholder">
           <div class="map-loading-ring"></div>
