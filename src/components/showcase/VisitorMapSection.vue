@@ -62,6 +62,7 @@ export default {
       lat: null,
       lon: null,
       ip: null,
+      source: null,
       loading: true,
       error: false
     })
@@ -90,7 +91,104 @@ export default {
       const parsedLat = Number(lat)
       const parsedLon = Number(lon)
       if (!Number.isFinite(parsedLat) || !Number.isFinite(parsedLon)) return null
+      if (parsedLat < -90 || parsedLat > 90 || parsedLon < -180 || parsedLon > 180) return null
       return [parsedLat, parsedLon]
+    }
+
+    function hasValidCoordinates(lat, lon) {
+      return !!normalizePoint(lat, lon)
+    }
+
+    function getBrowserPosition() {
+      if (!navigator.geolocation) {
+        return Promise.reject(new Error('Geolocation not supported'))
+      }
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 8000,
+          maximumAge: 60000
+        })
+      })
+    }
+
+    async function fetchIpData() {
+      const res = await fetch('https://ipapi.co/json/')
+      if (!res.ok) throw new Error('IP API error')
+      const data = await res.json()
+      if (data.error) throw new Error(data.reason || 'IP API failed')
+      return data
+    }
+
+    async function fetchCountryCapitalCoords(countryCode) {
+      if (!countryCode) return null
+      try {
+        const res = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}?fields=capitalInfo`)
+        if (!res.ok) return null
+        const data = await res.json()
+        const country = Array.isArray(data) ? data[0] : data
+        const latlng = country?.capitalInfo?.latlng
+        if (!Array.isArray(latlng) || latlng.length < 2) return null
+        const [lat, lon] = latlng
+        if (!hasValidCoordinates(lat, lon)) return null
+        return { latitude: Number(lat), longitude: Number(lon) }
+      } catch {
+        return null
+      }
+    }
+
+    async function resolveVisitorLocation() {
+      const ipData = await fetchIpData()
+      try {
+        const position = await getBrowserPosition()
+        const { latitude, longitude, accuracy } = position.coords
+        if (!hasValidCoordinates(latitude, longitude)) throw new Error('Invalid browser coordinates')
+
+        return {
+          country_name: ipData.country_name,
+          country_code: ipData.country_code,
+          region: ipData.region || '',
+          city: ipData.city || '',
+          ip: ipData.ip,
+          latitude,
+          longitude,
+          accuracy,
+          source: 'browser'
+        }
+      } catch (geoError) {
+        const isDenied = geoError && Number(geoError.code) === 1
+
+        if (isDenied) {
+          const capitalCoords = await fetchCountryCapitalCoords(ipData.country_code)
+          if (capitalCoords) {
+            return {
+              country_name: ipData.country_name,
+              country_code: ipData.country_code,
+              region: ipData.region || '',
+              city: ipData.city || '',
+              ip: ipData.ip,
+              latitude: capitalCoords.latitude,
+              longitude: capitalCoords.longitude,
+              source: 'capital-fallback'
+            }
+          }
+        }
+
+        if (!hasValidCoordinates(ipData.latitude, ipData.longitude)) {
+          throw new Error('IP coordinates unavailable')
+        }
+
+        return {
+          country_name: ipData.country_name,
+          country_code: ipData.country_code,
+          region: ipData.region || '',
+          city: ipData.city || '',
+          ip: ipData.ip,
+          latitude: Number(ipData.latitude),
+          longitude: Number(ipData.longitude),
+          source: 'ip-fallback'
+        }
+      }
     }
 
     /** Add a visitor marker to the map with animation + popup */
@@ -268,10 +366,7 @@ export default {
 
     async function fetchCurrentVisitor() {
       try {
-        const res = await fetch('https://ipapi.co/json/')
-        if (!res.ok) throw new Error('API error')
-        const data = await res.json()
-        if (data.error) throw new Error(data.reason)
+        const data = await resolveVisitorLocation()
 
         currentVisitor.value = {
           country: data.country_name,
@@ -280,6 +375,7 @@ export default {
           lat: data.latitude,
           lon: data.longitude,
           ip: data.ip,
+          source: data.source,
           loading: false,
           error: false
         }
