@@ -23,7 +23,6 @@ function onSwitch() {
       <p class="site-footer__byline">© 2026 · created by Elija<button
           type="button"
           class="site-footer__switch"
-          :class="{ 'is-open': open }"
           :aria-expanded="open"
           aria-controls="visitor-history"
           aria-label="Visitor history"
@@ -50,19 +49,19 @@ function onSwitch() {
   letter-spacing: inherit;
   line-height: inherit;
   vertical-align: baseline;
-  cursor: pointer;
+  cursor: inherit;
+  text-decoration: none;
   appearance: none;
   -webkit-appearance: none;
 }
 
-.site-footer__switch.is-open,
 .site-footer__switch:hover,
-.site-footer__switch:focus-visible {
-  color: var(--foil-gold-hi);
-}
-
-.site-footer__switch:focus-visible {
-  outline: 1px solid var(--accent-line);
-  outline-offset: 2px;
+.site-footer__switch:focus,
+.site-footer__switch:focus-visible,
+.site-footer__switch:active {
+  color: inherit;
+  background: transparent;
+  outline: none;
+  text-decoration: none;
 }
 </style>
