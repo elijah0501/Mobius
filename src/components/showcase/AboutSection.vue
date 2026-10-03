@@ -4,9 +4,11 @@
     <div class="section-title-bar"></div>
     <p class="section-subtitle">A brief introduction placeholder</p>
 
-    <div class="glass-card about-card">
-      <div class="about-content">
-        <div class="about-info">
+    <div class="about-layout">
+      <div class="about-portrait" role="img" aria-label="Portrait placeholder"></div>
+      <div class="about-card">
+        <div class="about-content">
+          <div class="about-info">
           <div class="placeholder-text name" style="width: 220px; height: 2rem; margin-bottom: 0.6rem;"></div>
           <div class="placeholder-text tagline" style="width: 300px; height: 1.1rem; margin-bottom: 1.5rem;"></div>
           <div class="placeholder-text" style="margin-bottom: 0.6rem;"></div>
@@ -35,14 +37,39 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
+.about-layout {
+  display: grid;
+  grid-template-columns: minmax(13.2rem, 1fr) minmax(0, 53.5rem);
+  align-items: center;
+  width: 100%;
+}
+
+.about-portrait {
+  width: 13.2rem;
+  height: 13.2rem;
+  justify-self: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(245, 240, 232, 0.16), transparent 42%),
+    linear-gradient(155deg, rgba(90, 143, 168, 0.42), rgba(23, 20, 17, 0.15) 58%, rgba(212, 175, 55, 0.28));
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  box-shadow:
+    inset 0 0 0 0.45rem rgba(0, 0, 0, 0.28),
+    0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
 .about-card {
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 53.5rem;
+  min-width: 0;
+  margin: 0;
+  justify-self: end;
 }
 
 .about-content {
@@ -83,6 +110,26 @@
   color: var(--muted);
   width: 80px;
   flex-shrink: 0;
+}
+
+@media (max-width: 760px) {
+  .about-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1.6rem;
+  }
+
+  .about-card {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .about-portrait {
+    width: 10.45rem;
+    height: 10.45rem;
+  }
 }
 
 @media (max-width: 640px) {

@@ -56,24 +56,80 @@ async function fetchIpPlace() {
   }
 }
 
-async function fetchDistrict(latitude, longitude, cityName) {
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return ''
+async function fetchReverseGeocode(latitude, longitude) {
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null
   const endpoint = new URL('https://api.bigdatacloud.net/data/reverse-geocode-client')
   endpoint.searchParams.set('latitude', String(latitude))
   endpoint.searchParams.set('longitude', String(longitude))
   endpoint.searchParams.set('localityLanguage', 'en')
   const response = await fetch(endpoint)
-  if (!response.ok) return ''
-  return pickDistrict(await response.json(), cityName)
+  if (!response.ok) return null
+  return response.json()
+}
+
+function readDevicePosition() {
+  if (!navigator.geolocation) return Promise.reject(new Error('Geolocation unavailable'))
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        })
+      },
+      () => reject(new Error('Geolocation denied')),
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+    )
+  })
+}
+
+function placeFromReverse(data, latitude, longitude) {
+  const city = data?.city || data?.locality || ''
+  return {
+    city,
+    region: data?.principalSubdivision || '',
+    country: data?.countryName || '',
+    latitude,
+    longitude,
+    district: pickDistrict(data, city),
+  }
 }
 
 export async function resolveVisitPlace() {
-  const place = await fetchIpPlace()
-  let district = ''
+  let place = null
   try {
-    district = await fetchDistrict(place.latitude, place.longitude, place.city || place.region)
+    place = await fetchIpPlace()
   } catch {
-    district = ''
+    place = null
   }
-  return { ...place, district }
+
+  if (place?.city) {
+    let district = ''
+    try {
+      const data = await fetchReverseGeocode(place.latitude, place.longitude)
+      district = pickDistrict(data, place.city || place.region)
+    } catch {
+      district = ''
+    }
+    return { ...place, district }
+  }
+
+  try {
+    const position = await readDevicePosition()
+    const data = await fetchReverseGeocode(position.latitude, position.longitude)
+    const reversed = placeFromReverse(data, position.latitude, position.longitude)
+    return {
+      city: reversed.city,
+      region: reversed.region || place?.region || '',
+      country: reversed.country || place?.country || '',
+      latitude: position.latitude,
+      longitude: position.longitude,
+      district: reversed.district,
+    }
+  } catch {
+    if (place?.country && Number.isFinite(place.latitude) && Number.isFinite(place.longitude)) {
+      return { ...place, district: '' }
+    }
+    throw new Error('Location lookup failed')
+  }
 }

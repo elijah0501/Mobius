@@ -1,9 +1,9 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { onValue, push, ref as dbRef } from 'firebase/database'
+import { onValue, ref as dbRef } from 'firebase/database'
 import { db, isFirebaseConfigured } from '@/firebase'
 import { useVisitorHistoryPanel } from '@/composables/useVisitorHistoryPanel'
-import { resolveVisitPlace } from '@/lib/visitPlace'
+import { formatVisitDate } from '@/lib/visitTime'
 
 const PREVIEW_SIZE = 4
 const PAGE_SIZE = 30
@@ -17,12 +17,6 @@ const sectionRef = ref(null)
 const { open } = useVisitorHistoryPanel()
 let stopListening = () => {}
 
-const dateFormat = new Intl.DateTimeFormat('en-GB', {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-})
-
 const pageCount = computed(() => Math.max(1, Math.ceil(visitors.value.length / PAGE_SIZE)))
 
 const visibleVisits = computed(() => {
@@ -33,14 +27,8 @@ const visibleVisits = computed(() => {
 
 const pages = computed(() => Array.from({ length: pageCount.value }, (_, index) => index + 1))
 
-function formatDate(timestamp) {
-  const date = new Date(Number(timestamp))
-  if (Number.isNaN(date.getTime())) return ''
-  return dateFormat.format(date)
-}
-
 function formatMeta(visit) {
-  return [formatDate(visit.timestamp), visit.country].filter(Boolean).join(' · ')
+  return [formatVisitDate(visit.timestamp), visit.country].filter(Boolean).join(' · ')
 }
 
 function openHistory() {
@@ -96,28 +84,8 @@ function listenToVisitors() {
   )
 }
 
-async function recordVisit() {
-  if (!isFirebaseConfigured || !db) return
-  try {
-    const place = await resolveVisitPlace()
-    if (!place.country || !Number.isFinite(place.latitude) || !Number.isFinite(place.longitude)) return
-    await push(dbRef(db, 'visitors'), {
-      lat: place.latitude,
-      lon: place.longitude,
-      country: place.country,
-      region: place.region || '',
-      city: place.city || '',
-      district: place.district || '',
-      timestamp: Date.now(),
-    })
-  } catch {
-    // A failed write leaves the existing history on screen.
-  }
-}
-
 onMounted(() => {
   listenToVisitors()
-  recordVisit()
 })
 
 onUnmounted(() => {
