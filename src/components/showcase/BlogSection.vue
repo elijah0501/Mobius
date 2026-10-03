@@ -38,7 +38,7 @@
 }
 
 .blog-cover {
-  border-radius: 24px 24px 0 0;
+  border-radius: var(--radius) var(--radius) 0 0;
   aspect-ratio: 16 / 9;
 }
 
@@ -58,19 +58,19 @@
 
 .blog-date {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--muted);
 }
 
 .read-more {
   font-size: 0.85rem;
-  color: #4a90e2;
+  color: var(--accent-line);
   cursor: pointer;
   margin-top: auto;
   transition: color 0.3s ease;
 }
 
 .read-more:hover {
-  color: #6dacf0;
+  color: var(--ink);
 }
 
 @media (max-width: 1024px) {

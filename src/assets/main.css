@@ -1,133 +1,85 @@
 @import './base.css';
+@import './shell.css';
 
-/* ==============================
-   App Layout
-   ============================== */
 #app {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100vh;
   font-weight: normal;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-/* ==============================
-   Showcase Container
-   ============================== */
 .showcase-container {
   position: relative;
-  overflow: hidden;
-  padding: 80px 0 3rem; /* 80px = navbar height */
-  min-height: 100vh;
+  padding: 1.5rem 0 0;
 }
 
-/* Ambient floating orbs — uses extra elements inside .showcase-container */
-.showcase-container .ambient-orb {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(100px);
-  z-index: 0;
-}
-
-@keyframes blob-drift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(50px, -40px) scale(1.08); }
-  50% { transform: translate(-30px, 60px) scale(0.94); }
-  75% { transform: translate(40px, 25px) scale(1.04); }
-}
-
-/* ==============================
-   Section Layout
-   ============================== */
 .showcase-section {
-  max-width: 1200px;
+  width: var(--shell-w);
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 3.5rem 0;
   position: relative;
   z-index: 1;
 }
 
 .section-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(1.7rem, 2.6vw, 2.35rem);
+  font-weight: 500;
+  color: var(--ink);
   text-align: center;
-  margin: 0 0 0.3rem 0;
-  letter-spacing: -0.02em;
+  margin: 0;
+  letter-spacing: 0.06em;
 }
 
 .section-title-bar {
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, #4a90e2, #a050dc);
-  margin: 0 auto 0.8rem;
-  border-radius: 2px;
+  width: 7.5rem;
+  height: 1px;
+  margin: 0.95rem auto 0.85rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--foil-gold-lo) 18%,
+    var(--foil-gold-hi) 50%,
+    var(--foil-gold-lo) 82%,
+    transparent 100%
+  );
+  box-shadow: 0 0 10px rgb(212 175 55 / 28%);
 }
 
 .section-subtitle {
-  font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.02rem;
+  color: var(--muted);
   text-align: center;
-  margin: 0 0 3rem 0;
+  margin: 0 0 2.6rem;
   font-weight: 400;
 }
 
-/* ==============================
-   Glass Card — Liquid Glass Effect
-   ============================== */
 .glass-card {
   position: relative;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.07) 0%,
-    rgba(255, 255, 255, 0.02) 40%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 2rem;
+  background: color-mix(in srgb, var(--panel) 78%, transparent);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.6rem;
   overflow: hidden;
-  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  transition:
+    border-color 0.35s ease,
+    transform 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.45s ease;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    0 2px 8px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 28px rgba(0, 0, 0, 0.28);
 }
 
-/* Liquid light reflection — tracks mouse via CSS custom property */
 .glass-card::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: radial-gradient(
-    650px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(255, 255, 255, 0.1) 0%,
-    transparent 40%
+    420px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(243, 226, 168, 0.08) 0%,
+    transparent 42%
   );
   pointer-events: none;
   z-index: 1;
@@ -139,61 +91,23 @@ a,
   opacity: 1;
 }
 
-/* Prismatic / rainbow edge reflection */
-.glass-card::after {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  right: -1px;
-  bottom: -1px;
-  border-radius: 24px;
-  background: linear-gradient(
-    135deg,
-    rgba(100, 180, 255, 0.08) 0%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 100, 200, 0.06) 75%,
-    rgba(100, 255, 180, 0.04) 100%
-  );
-  pointer-events: none;
-  z-index: 0;
-  transition: opacity 0.5s ease;
-}
-
-.glass-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.2);
+.glass-card:hover,
+.reveal-stagger.visible > .glass-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(158, 196, 212, 0.45);
   box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.45),
-    0 6px 20px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 36px rgba(0, 0, 0, 0.4);
 }
 
-.glass-card:hover::after {
-  background: linear-gradient(
-    135deg,
-    rgba(100, 180, 255, 0.14) 0%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 100, 200, 0.12) 75%,
-    rgba(100, 255, 180, 0.08) 100%
-  );
-}
-
-/* Inner content above pseudo-elements */
 .glass-card > * {
   position: relative;
   z-index: 2;
 }
 
-/* ==============================
-   Scroll Reveal Animations
-   ============================== */
 .reveal {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(24px);
   transition:
     opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
     transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
@@ -204,11 +118,10 @@ a,
   transform: translateY(0);
 }
 
-/* Staggered reveal for card grids */
 .reveal-stagger > .glass-card,
 .reveal-stagger > .timeline-item {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(24px);
   transition:
     opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1),
     transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
@@ -233,12 +146,9 @@ a,
   transform: translateY(0);
 }
 
-/* ==============================
-   Placeholder Elements
-   ============================== */
 .placeholder-text {
-  background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
-  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(245, 240, 232, 0.1) 0%, rgba(245, 240, 232, 0.03) 100%);
+  border-radius: 6px;
   height: 1em;
   width: 100%;
 }
@@ -247,80 +157,62 @@ a,
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(74, 144, 226, 0.25), rgba(160, 80, 220, 0.25));
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 30px rgba(74, 144, 226, 0.15);
+  background: linear-gradient(135deg, rgba(90, 143, 168, 0.28), rgba(212, 175, 55, 0.18));
+  border: 1px solid var(--line);
 }
 
 .placeholder-image {
   width: 100%;
   aspect-ratio: 16 / 9;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(245, 240, 232, 0.04) 0%, rgba(245, 240, 232, 0.015) 100%);
+  border: 1px solid rgba(63, 58, 54, 0.7);
 }
 
 .placeholder-icon {
   width: 48px;
   height: 48px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(74, 144, 226, 0.18), rgba(160, 80, 220, 0.18));
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 0.55rem;
+  background: linear-gradient(135deg, rgba(90, 143, 168, 0.2), rgba(212, 175, 55, 0.12));
+  border: 1px solid var(--line);
   flex-shrink: 0;
 }
 
 .placeholder-tag {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
+  padding: 0.22rem 0.7rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(245, 240, 232, 0.04);
+  border: 1px solid var(--line);
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--muted);
   white-space: nowrap;
 }
 
 .placeholder-bar {
   height: 6px;
   border-radius: 3px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(245, 240, 232, 0.06);
   overflow: hidden;
 }
 
 .placeholder-bar-fill {
   height: 100%;
   border-radius: 3px;
-  background: linear-gradient(90deg, #4a90e2, #a050dc);
-  opacity: 0.4;
+  background: linear-gradient(90deg, var(--accent), var(--foil-gold));
+  opacity: 0.7;
 }
 
-/* ==============================
-   Responsive
-   ============================== */
 @media (max-width: 768px) {
-  .showcase-container {
-    padding: 3rem 0 2rem;
-  }
-
   .showcase-section {
-    padding: 3rem 1rem;
-  }
-
-  .section-title {
-    font-size: 1.8rem;
+    padding: 2.6rem 0;
   }
 
   .section-subtitle {
-    font-size: 0.95rem;
     margin-bottom: 2rem;
   }
 
   .glass-card {
-    padding: 1.5rem;
-    border-radius: 18px;
-  }
-
-  .glass-card::after {
-    border-radius: 18px;
+    padding: 1.25rem;
   }
 }

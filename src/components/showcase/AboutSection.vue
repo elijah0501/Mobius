@@ -80,7 +80,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--muted);
   width: 80px;
   flex-shrink: 0;
 }

@@ -41,7 +41,7 @@
 }
 
 .project-card .placeholder-image {
-  border-radius: 24px 24px 0 0;
+  border-radius: var(--radius) var(--radius) 0 0;
   aspect-ratio: 16 / 10;
 }
 

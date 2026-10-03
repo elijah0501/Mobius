@@ -47,11 +47,11 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4a90e2, #a050dc);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: radial-gradient(circle, var(--foil-gold-hi) 0%, var(--foil-gold) 70%);
+  border: 1px solid rgba(243, 226, 168, 0.45);
   transform: translateX(-50%);
   z-index: 2;
-  box-shadow: 0 0 12px rgba(74, 144, 226, 0.4);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
 }
 
 .timeline-connector {
@@ -60,7 +60,7 @@
   top: 2rem;
   width: 2px;
   height: calc(100% + 1.5rem);
-  background: linear-gradient(180deg, rgba(74, 144, 226, 0.3), rgba(160, 80, 220, 0.1));
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.45), rgba(158, 196, 212, 0.05));
   transform: translateX(-50%);
 }
 

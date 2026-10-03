@@ -1,52 +1,36 @@
-/* color palette from <https://github.com/vuejs/theme> */
 :root {
-  --vt-c-white: #ffffff;
-  --vt-c-white-soft: #f8f8f8;
-  --vt-c-white-mute: #f2f2f2;
-
-  --vt-c-black: #181818;
-  --vt-c-black-soft: #222222;
-  --vt-c-black-mute: #282828;
-
-  --vt-c-indigo: #2c3e50;
-
-  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
-  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
-
-  --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
-  --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+  color-scheme: dark;
+  --bg: #000000;
+  --ink: #f5f0e8;
+  --muted: #a8a29e;
+  --panel: #171411;
+  --line: #3f3a36;
+  --accent: #5a8fa8;
+  --accent-line: #9ec4d4;
+  --accent-glow: rgba(158, 196, 212, 0.38);
+  --foil-gold: #d4af37;
+  --foil-gold-hi: #f3e2a8;
+  --foil-gold-lo: #8a6a28;
+  --glow-h: 199;
+  --glow-s: 65%;
+  --glow-l: 63%;
+  --page-glow-lobe: hsl(var(--glow-h) var(--glow-s) var(--glow-l) / 0.11);
+  --page-glow-lobe-green: hsl(158 var(--glow-s) var(--glow-l) / 0.11);
+  --aurora-t: 1.8;
+  --aurora-gain: 0.34;
+  --shell-w: min(100vw - 3rem, 84rem);
+  --nav-h-max: 6.75rem;
+  --nav-h-min: 2.6rem;
+  --nav-h-ssr: var(--nav-h-max);
+  --radius: 0.75rem;
+  --color-background: var(--bg);
+  --color-text: var(--ink);
+  --color-heading: var(--ink);
 }
 
-/* semantic color variables for this project */
-:root {
-  --color-background: var(--vt-c-white);
-  --color-background-soft: var(--vt-c-white-soft);
-  --color-background-mute: var(--vt-c-white-mute);
-
-  --color-border: var(--vt-c-divider-light-2);
-  --color-border-hover: var(--vt-c-divider-light-1);
-
-  --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
-
-  --section-gap: 160px;
-}
-
-@media (prefers-color-scheme: dark) {
+@media (max-width: 40rem) {
   :root {
-    --color-background: var(--vt-c-black);
-    --color-background-soft: var(--vt-c-black-soft);
-    --color-background-mute: var(--vt-c-black-mute);
-
-    --color-border: var(--vt-c-divider-dark-2);
-    --color-border-hover: var(--vt-c-divider-dark-1);
-
-    --color-heading: var(--vt-c-text-dark-1);
-    --color-text: var(--vt-c-text-dark-2);
+    --nav-h-ssr: calc(var(--nav-h-min) + 2px);
   }
 }
 
@@ -58,14 +42,19 @@
   font-weight: normal;
 }
 
+html {
+  overflow-x: clip;
+  scroll-behavior: smooth;
+}
+
 body {
   min-height: 100vh;
-  color: var(--color-text);
-  background: var(--color-background);
-  transition:
-    color 0.5s,
-    background-color 0.5s;
-  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  overflow-x: clip;
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.75;
   font-family:
     Inter,
     -apple-system,
@@ -83,6 +72,11 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  margin: 0;
-  padding: 0;
+}
+
+@supports not (overflow-x: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
 }
