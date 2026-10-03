@@ -1,7 +1,8 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { onValue, push, ref as dbRef } from 'firebase/database'
 import { db, isFirebaseConfigured } from '@/firebase'
+import { useVisitorHistoryPanel } from '@/composables/useVisitorHistoryPanel'
 import { resolveVisitPlace } from '@/lib/visitPlace'
 
 const PREVIEW_SIZE = 4
@@ -11,6 +12,9 @@ const visitors = ref([])
 const historyStatus = ref('loading')
 const expanded = ref(false)
 const page = ref(1)
+const revealed = ref(false)
+const sectionRef = ref(null)
+const { open } = useVisitorHistoryPanel()
 let stopListening = () => {}
 
 const dateFormat = new Intl.DateTimeFormat('en-GB', {
@@ -52,6 +56,23 @@ function closeHistory() {
 function goToPage(nextPage) {
   page.value = nextPage
 }
+
+function onSectionTransition(event) {
+  if (!revealed.value || event.target !== sectionRef.value) return
+  if (event.propertyName !== 'grid-template-rows') return
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  sectionRef.value.scrollIntoView({ behavior: motion ? 'auto' : 'smooth', block: 'start' })
+}
+
+watch(
+  open,
+  (value) => {
+    requestAnimationFrame(() => {
+      revealed.value = value
+    })
+  },
+  { immediate: true },
+)
 
 function listenToVisitors() {
   if (!isFirebaseConfigured || !db) {
@@ -105,8 +126,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section class="showcase-section">
-    <div class="glass-card location-card reveal">
+  <section
+    id="visitor-history"
+    ref="sectionRef"
+    class="showcase-section location-section"
+    :class="{ 'is-open': revealed }"
+    :inert="!revealed"
+    :aria-hidden="!revealed"
+    @transitionend="onSectionTransition"
+  >
+    <div class="location-section__clip">
+      <div class="glass-card location-card">
       <header class="location-head">
         <div>
           <p class="location-kicker">Visitor history</p>
@@ -150,14 +180,50 @@ onUnmounted(() => {
           </button>
         </nav>
       </template>
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
+.location-section {
+  display: grid;
+  grid-template-rows: 0fr;
+  padding-top: 0;
+  padding-bottom: 0;
+  scroll-margin-top: calc(var(--site-nav-height, 4rem) + 1rem);
+  transition:
+    grid-template-rows 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.location-section.is-open {
+  grid-template-rows: 1fr;
+  padding-top: 3.5rem;
+  padding-bottom: 3.5rem;
+}
+
+.location-section__clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
 .location-card {
   width: 100%;
   padding: 1.6rem 1.5rem 1.3rem;
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.location-section.is-open .location-card {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1) 0.1s,
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .location-head {
@@ -284,7 +350,20 @@ onUnmounted(() => {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .location-section,
+  .location-card,
+  .location-section.is-open .location-card {
+    transition: none;
+  }
+}
+
 @media (max-width: 768px) {
+  .location-section.is-open {
+    padding-top: 2.6rem;
+    padding-bottom: 2.6rem;
+  }
+
   .location-card {
     padding: 1.25rem 1rem 1rem;
   }
