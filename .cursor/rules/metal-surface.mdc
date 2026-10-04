@@ -1,0 +1,10 @@
+---
+description: Metal surfaces must not use line textures
+alwaysApply: true
+---
+
+# Metal surfaces
+
+Do not add horizontal lines, vertical lines, or concentric circles to a metal surface. This includes repeating linear gradients, repeating radial gradients, lathe rings, brushed stripes, and noise stretched into streaks.
+
+Metal quality comes from light, value, and form. Do not reintroduce those line patterns in later revisions, even if the request is to add texture or a more metallic look.

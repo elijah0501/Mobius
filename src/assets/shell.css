@@ -129,6 +129,8 @@ a {
 }
 
 .site-nav {
+  font-family: var(--font-chrome);
+  font-weight: 400;
   --nav-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --nav-p: 0;
   --nav-spin: 0;
@@ -136,7 +138,7 @@ a {
   --nav-duration: 0s;
   --nav-logo-max: 3.5;
   --nav-logo-min: 1.25;
-  --nav-brand-max: 1.75;
+  --nav-brand-max: 2;
   --nav-brand-min: 1;
   --glass-on: var(--nav-edge);
   --glass-white: var(--nav-edge);
@@ -178,11 +180,36 @@ a {
 }
 
 .site-nav__logo {
+  display: block;
   width: calc(var(--nav-logo-max) * 1rem);
   height: calc(var(--nav-logo-max) * 1rem);
   flex-shrink: 0;
   border-radius: 50%;
-  object-fit: cover;
+  -webkit-mask-image: url('./logo.png');
+  mask-image: url('./logo.png');
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  --foil-gold-deep: color-mix(in srgb, var(--foil-gold-lo) 50%, white);
+  --logo-foil-hi: color-mix(in srgb, var(--foil-gold-hi) 40%, white);
+  --logo-foil: color-mix(in srgb, var(--foil-gold) 40%, white);
+  --logo-foil-deep: color-mix(in srgb, var(--foil-gold-deep) 40%, white);
+  --logo-foil-flash: color-mix(in srgb, #fff6d6 40%, white);
+  background-image: conic-gradient(
+    from var(--logo-foil-turn) at center,
+    var(--logo-foil-hi) 0%,
+    var(--logo-foil) 20%,
+    var(--logo-foil-deep) 38%,
+    var(--logo-foil-hi) 52%,
+    var(--logo-foil-flash) 60%,
+    var(--logo-foil) 72%,
+    var(--logo-foil-deep) 88%,
+    var(--logo-foil) 100%
+  );
+  animation: logo-foil-turn 120s linear infinite;
   transform: translateX(calc(var(--nav-p) * (var(--nav-logo-min) - var(--nav-logo-max)) * 0.5rem))
     scale(calc(1 - var(--nav-p) * (1 - var(--nav-logo-min) / var(--nav-logo-max))))
     rotate(calc(var(--nav-spin) * 360deg));
@@ -194,6 +221,7 @@ a {
   position: relative;
   display: inline-block;
   white-space: nowrap;
+  margin-left: 15px;
   font-size: calc(var(--nav-brand-max) * 1rem);
   transform: translateX(
       calc(
@@ -206,26 +234,42 @@ a {
   will-change: transform;
 }
 
-.site-nav__word {
-  position: relative;
-  z-index: 1;
-  letter-spacing: 0.12em;
+.site-nav__word,
+.site-nav__word-lead {
+  --foil-gold-deep: color-mix(in srgb, var(--foil-gold-lo) 50%, white);
   background-image: linear-gradient(
     118deg,
     var(--foil-gold-hi) 0%,
     var(--foil-gold) 20%,
-    var(--foil-gold-lo) 38%,
+    var(--foil-gold-deep) 38%,
     var(--foil-gold-hi) 52%,
     #fff6d6 60%,
     var(--foil-gold) 72%,
-    var(--foil-gold-lo) 88%,
+    var(--foil-gold-deep) 88%,
     var(--foil-gold) 100%
   );
   background-size: 220% 100%;
+  animation: brand-foil-flow 18s ease-in-out infinite;
+}
+
+.site-nav__word,
+.site-nav__word-lead {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: brand-foil-flow 18s ease-in-out infinite;
+}
+
+.site-nav__word {
+  position: relative;
+  z-index: 1;
+  text-transform: uppercase;
+  letter-spacing: calc(0.12em + 10px);
+}
+
+.site-nav__word-lead {
+  font-size: 1.16em;
+  letter-spacing: 0;
+  margin-right: calc(0.12em / 1.16 + 10px);
 }
 
 .brand-dust {
@@ -255,6 +299,18 @@ a {
   animation-name: map-gold-spray;
   animation-timing-function: cubic-bezier(0.18, 0.55, 0.22, 1);
   animation-iteration-count: infinite;
+}
+
+@property --logo-foil-turn {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes logo-foil-turn {
+  to {
+    --logo-foil-turn: -360deg;
+  }
 }
 
 @keyframes brand-foil-flow {
@@ -294,6 +350,10 @@ a {
 
   .site-nav__home {
     gap: 1.25rem;
+  }
+
+  .site-nav__brand {
+    display: none;
   }
 }
 
@@ -415,6 +475,8 @@ a {
 }
 
 .site-footer {
+  font-family: var(--font-chrome);
+  font-weight: 400;
   position: relative;
   margin-top: auto;
   --footer-gap: 6rem;
@@ -458,6 +520,7 @@ a {
 
 @supports not ((-webkit-background-clip: text) or (background-clip: text)) {
   .site-nav__word,
+  .site-nav__word-lead,
   .site-nav__link--active .site-nav__link-text {
     color: var(--foil-gold);
     background-image: none;
@@ -476,6 +539,8 @@ a {
 @media (prefers-reduced-motion: reduce) {
   .liquid-glass::after,
   .site-nav__word,
+  .site-nav__word-lead,
+  .site-nav__logo,
   .site-nav__link--active .site-nav__link-text,
   .site-nav__link--active::after {
     animation: none;

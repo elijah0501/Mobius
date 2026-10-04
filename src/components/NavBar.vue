@@ -30,11 +30,11 @@ watch(
 <template>
   <header ref="headerRef" class="site-nav liquid-glass" :class="{ 'site-nav--compact': compact }">
     <div class="site-nav__inner">
-      <RouterLink to="/" class="site-nav__home">
-        <img class="site-nav__logo" src="@/assets/logo.png" alt="" width="56" height="56" />
+      <RouterLink to="/" class="site-nav__home" aria-label="Default">
+        <span class="site-nav__logo" aria-hidden="true" />
         <span class="site-nav__brand">
           <BrandGoldDust />
-          <span class="site-nav__word">Möbius</span>
+          <span class="site-nav__word"><span class="site-nav__word-lead">D</span>efault</span>
         </span>
       </RouterLink>
 

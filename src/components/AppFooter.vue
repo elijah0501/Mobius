@@ -19,7 +19,7 @@ function onSwitch() {
 <template>
   <footer class="site-footer">
     <div class="site-footer__inner">
-      <p class="site-footer__brand">Möbius</p>
+      <p class="site-footer__brand">Default</p>
       <p class="site-footer__byline">© 2026 · created by Elija<button
           type="button"
           class="site-footer__switch"

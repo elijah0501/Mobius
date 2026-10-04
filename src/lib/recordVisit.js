@@ -2,7 +2,7 @@ import { push, ref as dbRef } from 'firebase/database'
 import { db, isFirebaseConfigured } from '@/firebase'
 import { resolveVisitPlace } from '@/lib/visitPlace'
 
-const SESSION_KEY = 'mobius-visit-recorded'
+const SESSION_KEY = 'default-visit-recorded'
 let recording = false
 
 function readRecorded() {

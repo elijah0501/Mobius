@@ -4,7 +4,7 @@ import { computed } from 'vue'
 const props = defineProps({
   count: {
     type: Number,
-    default: 18,
+    default: 12,
   },
 })
 
