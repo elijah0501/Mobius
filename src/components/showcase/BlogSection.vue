@@ -2,7 +2,6 @@
   <section class="showcase-section">
     <h2 class="section-title reveal">Latest Posts</h2>
     <div class="section-title-bar reveal"></div>
-    <p class="section-subtitle reveal">Thoughts, tutorials, and technical writing placeholder</p>
 
     <div class="blog-grid reveal-stagger">
       <div v-for="i in 3" :key="i" class="glass-card blog-card">

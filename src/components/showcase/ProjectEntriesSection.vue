@@ -1,29 +1,19 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { experiences } from '@/content/experience.js'
+import { projects } from '@/content/projects.js'
 
 const previewCount = 5
 const pageSize = 10
 const expanded = ref(false)
 const page = ref(1)
 
-const pageCount = computed(() => Math.ceil(experiences.length / pageSize))
+const pageCount = computed(() => Math.ceil(projects.length / pageSize))
 
-const visibleExperiences = computed(() => {
-  if (!expanded.value) return experiences.slice(0, previewCount)
+const visibleProjects = computed(() => {
+  if (!expanded.value) return projects.slice(0, previewCount)
   const start = (page.value - 1) * pageSize
-  return experiences.slice(start, start + pageSize)
+  return projects.slice(start, start + pageSize)
 })
-
-function startYear(dates) {
-  const match = dates.match(/\d{4}/)
-  return match ? match[0] : ''
-}
-
-function placeLine(item) {
-  if (!item.location) return item.organization
-  return `${item.organization}, ${item.location}`
-}
 
 function toggleList() {
   expanded.value = !expanded.value
@@ -37,48 +27,48 @@ function goTo(nextPage) {
 
 <template>
   <section class="showcase-section">
-    <h2 class="section-title reveal">Experience</h2>
+    <h2 class="section-title reveal">Projects</h2>
     <div class="section-title-bar reveal"></div>
 
-    <div class="experience-wrap reveal">
-      <ol id="experience-entries" class="experience-list">
-        <li v-for="item in visibleExperiences" :key="`${item.role}-${item.dates}`" class="experience-entry">
-          <div class="experience-year">{{ startYear(item.dates) }}</div>
-          <div class="experience-content">
-            <p class="experience-title">{{ item.role }}</p>
-            <p class="experience-dates">{{ item.dates }}</p>
-            <p class="experience-place">{{ placeLine(item) }}</p>
-            <ul v-if="item.points.length" class="experience-points">
-              <li v-for="point in item.points" :key="point">{{ point }}</li>
+    <div class="project-wrap reveal">
+      <ol id="project-entries" class="project-list">
+        <li v-for="project in visibleProjects" :key="project.title" class="project-entry">
+          <div class="project-year">{{ project.year }}</div>
+          <div class="project-content">
+            <p class="project-title">{{ project.title }}</p>
+            <p class="project-dates">{{ project.dates }}</p>
+            <p v-if="project.focus" class="project-focus">{{ project.focus }}</p>
+            <ul v-if="project.points.length" class="project-points">
+              <li v-for="point in project.points" :key="point">{{ point }}</li>
             </ul>
           </div>
         </li>
       </ol>
-      <div v-if="experiences.length > previewCount" class="experience-more">
+      <div v-if="projects.length > previewCount" class="project-more">
         <button
           type="button"
-          class="experience-disclosure"
+          class="project-disclosure"
           :aria-expanded="expanded"
-          :aria-label="expanded ? 'Collapse experience' : 'Expand experience'"
-          aria-controls="experience-entries"
+          :aria-label="expanded ? 'Collapse projects' : 'Expand projects'"
+          aria-controls="project-entries"
           @click="toggleList"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M6 9.5 12 15.5 18 9.5" />
           </svg>
         </button>
-        <nav v-if="expanded && pageCount > 1" class="experience-pages" aria-label="Experience pages">
-          <button type="button" class="experience-toggle" :disabled="page === 1" @click="goTo(page - 1)">Previous</button>
+        <nav v-if="expanded && pageCount > 1" class="project-pages" aria-label="Project pages">
+          <button type="button" class="project-toggle" :disabled="page === 1" @click="goTo(page - 1)">Previous</button>
           <button
             v-for="number in pageCount"
             :key="number"
             type="button"
-            class="experience-toggle"
+            class="project-toggle"
             :class="{ 'is-current': number === page }"
             :aria-current="number === page ? 'page' : undefined"
             @click="goTo(number)"
           >{{ number }}</button>
-          <button type="button" class="experience-toggle" :disabled="page === pageCount" @click="goTo(page + 1)">Next</button>
+          <button type="button" class="project-toggle" :disabled="page === pageCount" @click="goTo(page + 1)">Next</button>
         </nav>
       </div>
     </div>
@@ -86,20 +76,20 @@ function goTo(nextPage) {
 </template>
 
 <style scoped>
-.experience-wrap {
+.project-wrap {
   width: 100%;
   max-width: 70rem;
   margin: 0 auto;
 }
 
-.experience-list {
+.project-list {
   width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.experience-entry {
+.project-entry {
   display: flex;
   gap: 1.5rem;
   align-items: flex-start;
@@ -107,11 +97,11 @@ function goTo(nextPage) {
   background: none;
 }
 
-.experience-entry + .experience-entry {
+.project-entry + .project-entry {
   border-top: 1px solid rgba(63, 58, 54, 0.72);
 }
 
-.experience-year {
+.project-year {
   flex: 0 0 3.6rem;
   padding-top: 0.15rem;
   font-size: 0.95rem;
@@ -119,31 +109,31 @@ function goTo(nextPage) {
   color: var(--muted);
 }
 
-.experience-content {
+.project-content {
   flex: 1;
   min-width: 0;
 }
 
-.experience-title,
-.experience-dates,
-.experience-place {
+.project-title,
+.project-dates,
+.project-focus {
   margin: 0;
 }
 
-.experience-title {
+.project-title {
   font-size: 1.05rem;
   line-height: 1.45;
   color: var(--ink);
 }
 
-.experience-dates {
+.project-dates {
   margin-top: 0.35rem;
   font-size: 0.92rem;
   line-height: 1.55;
   color: var(--muted);
 }
 
-.experience-place {
+.project-focus {
   margin-top: 0.28rem;
   font-size: 0.92rem;
   line-height: 1.55;
@@ -151,36 +141,36 @@ function goTo(nextPage) {
   color: var(--muted);
 }
 
-.experience-points {
+.project-points {
   margin: 0.45rem 0 0;
   padding: 0;
   list-style: none;
 }
 
-.experience-points li {
+.project-points li {
   font-size: 0.92rem;
   line-height: 1.55;
   color: var(--muted);
 }
 
-.experience-points li + li {
+.project-points li + li {
   margin-top: 0.2rem;
 }
 
-.experience-more,
-.experience-pages {
+.project-more,
+.project-pages {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.45rem;
 }
 
-.experience-more {
+.project-more {
   justify-content: center;
   margin-top: 0.15rem;
 }
 
-.experience-disclosure {
+.project-disclosure {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -195,7 +185,7 @@ function goTo(nextPage) {
   appearance: none;
 }
 
-.experience-disclosure svg {
+.project-disclosure svg {
   width: 1.15rem;
   height: 1.15rem;
   fill: none;
@@ -206,31 +196,31 @@ function goTo(nextPage) {
   transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-.experience-disclosure[aria-expanded='true'] svg {
+.project-disclosure[aria-expanded='true'] svg {
   transform: rotate(180deg);
 }
 
-.experience-disclosure:hover,
-.experience-disclosure:focus-visible {
+.project-disclosure:hover,
+.project-disclosure:focus-visible {
   color: var(--foil-gold-hi);
 }
 
-.experience-disclosure:hover svg,
-.experience-disclosure:focus-visible svg {
+.project-disclosure:hover svg,
+.project-disclosure:focus-visible svg {
   transform: scale(1.12);
 }
 
-.experience-disclosure[aria-expanded='true']:hover svg,
-.experience-disclosure[aria-expanded='true']:focus-visible svg {
+.project-disclosure[aria-expanded='true']:hover svg,
+.project-disclosure[aria-expanded='true']:focus-visible svg {
   transform: rotate(180deg) scale(1.12);
 }
 
-.experience-disclosure:focus-visible {
+.project-disclosure:focus-visible {
   outline: 1px solid var(--foil-gold-lo);
   outline-offset: 2px;
 }
 
-.experience-toggle {
+.project-toggle {
   display: inline-block;
   padding: 0.22rem 0.7rem;
   border: 1px solid var(--line);
@@ -243,36 +233,36 @@ function goTo(nextPage) {
   appearance: none;
 }
 
-.experience-toggle:hover,
-.experience-toggle:focus-visible {
+.project-toggle:hover,
+.project-toggle:focus-visible {
   color: var(--ink);
   border-color: var(--foil-gold-lo);
 }
 
-.experience-toggle.is-current {
+.project-toggle.is-current {
   color: var(--ink);
   border-color: var(--foil-gold-lo);
 }
 
-.experience-toggle:disabled {
+.project-toggle:disabled {
   cursor: default;
   opacity: 0.45;
 }
 
 @media (max-width: 640px) {
-  .experience-entry {
+  .project-entry {
     flex-direction: column;
     gap: 0.3rem;
   }
 
-  .experience-year {
+  .project-year {
     flex-basis: auto;
     padding-top: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .experience-disclosure svg {
+  .project-disclosure svg {
     transition: none;
   }
 }

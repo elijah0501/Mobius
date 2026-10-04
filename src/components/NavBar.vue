@@ -34,7 +34,7 @@ watch(
         <span class="site-nav__logo" aria-hidden="true" />
         <span class="site-nav__brand">
           <BrandGoldDust />
-          <span class="site-nav__word"><span class="site-nav__word-lead">D</span>efault</span>
+          <span class="site-nav__word">Default</span>
         </span>
       </RouterLink>
 

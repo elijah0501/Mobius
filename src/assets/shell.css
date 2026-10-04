@@ -133,12 +133,13 @@ a {
   font-weight: 400;
   --nav-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --nav-p: 0;
+  --nav-links: var(--nav-p);
   --nav-spin: 0;
   --nav-edge: 0;
   --nav-duration: 0s;
-  --nav-logo-max: 3.5;
+  --nav-logo-max: 2.7;
   --nav-logo-min: 1.25;
-  --nav-brand-max: 2;
+  --nav-brand-max: 1.833;
   --nav-brand-min: 1;
   --glass-on: var(--nav-edge);
   --glass-white: var(--nav-edge);
@@ -234,9 +235,14 @@ a {
   will-change: transform;
 }
 
-.site-nav__word,
-.site-nav__word-lead {
+.site-nav__word {
   --foil-gold-deep: color-mix(in srgb, var(--foil-gold-lo) 50%, white);
+  position: relative;
+  z-index: 1;
+  font-family: 'Montserrat', 'Poppins', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: calc(0.12em + 10px);
   background-image: linear-gradient(
     118deg,
     var(--foil-gold-hi) 0%,
@@ -249,27 +255,10 @@ a {
     var(--foil-gold) 100%
   );
   background-size: 220% 100%;
-  animation: brand-foil-flow 18s ease-in-out infinite;
-}
-
-.site-nav__word,
-.site-nav__word-lead {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.site-nav__word {
-  position: relative;
-  z-index: 1;
-  text-transform: uppercase;
-  letter-spacing: calc(0.12em + 10px);
-}
-
-.site-nav__word-lead {
-  font-size: 1.16em;
-  letter-spacing: 0;
-  margin-right: calc(0.12em / 1.16 + 10px);
+  animation: brand-foil-flow 18s ease-in-out infinite;
 }
 
 .brand-dust {
@@ -345,7 +334,7 @@ a {
 
 @media (max-width: 40rem) {
   .site-nav {
-    --nav-p: 1 !important;
+    --nav-links: 1;
   }
 
   .site-nav__home {
@@ -361,7 +350,7 @@ a {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  gap: calc(1.9rem - var(--nav-p) * 0.75rem);
+  gap: calc(1.9rem - var(--nav-links) * 0.75rem);
   font-size: 1rem;
 }
 
@@ -372,7 +361,7 @@ a {
   grid-template-areas: 'swap';
   align-items: center;
   justify-items: center;
-  width: calc(var(--label-w, 4em) - var(--nav-p) * (var(--label-w, 4em) - 1.375rem));
+  width: calc(var(--label-w, 4em) - var(--nav-links) * (var(--label-w, 4em) - 1.375rem));
   overflow: hidden;
   padding-bottom: 0.32rem;
   color: var(--muted);
@@ -387,9 +376,9 @@ a {
 .site-nav__link-icon {
   display: inline-flex;
   align-items: center;
-  opacity: clamp(0, calc((var(--nav-p) - 0.35) * 1.55), 1);
-  transform: scale(calc(0.55 + var(--nav-p) * 0.45));
-  filter: blur(calc((1 - var(--nav-p)) * 1.6px));
+  opacity: clamp(0, calc((var(--nav-links) - 0.35) * 1.55), 1);
+  transform: scale(calc(0.55 + var(--nav-links) * 0.45));
+  filter: blur(calc((1 - var(--nav-links)) * 1.6px));
 }
 
 .site-nav__link-icon svg {
@@ -401,9 +390,9 @@ a {
 .site-nav__link-text {
   display: inline-block;
   white-space: nowrap;
-  opacity: clamp(0, calc(1 - var(--nav-p) * 1.55), 1);
-  transform: scale(calc(1 - var(--nav-p) * 0.35));
-  filter: blur(calc(var(--nav-p) * 1.6px));
+  opacity: clamp(0, calc(1 - var(--nav-links) * 1.55), 1);
+  transform: scale(calc(1 - var(--nav-links) * 0.35));
+  filter: blur(calc(var(--nav-links) * 1.6px));
 }
 
 .site-nav__link:hover {
@@ -507,6 +496,7 @@ a {
 }
 
 .site-footer__byline {
+  font-family: 'Montserrat', 'Poppins', sans-serif;
   letter-spacing: 0.08em;
 }
 
@@ -520,7 +510,6 @@ a {
 
 @supports not ((-webkit-background-clip: text) or (background-clip: text)) {
   .site-nav__word,
-  .site-nav__word-lead,
   .site-nav__link--active .site-nav__link-text {
     color: var(--foil-gold);
     background-image: none;
@@ -539,7 +528,6 @@ a {
 @media (prefers-reduced-motion: reduce) {
   .liquid-glass::after,
   .site-nav__word,
-  .site-nav__word-lead,
   .site-nav__logo,
   .site-nav__link--active .site-nav__link-text,
   .site-nav__link--active::after {

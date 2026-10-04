@@ -26,14 +26,8 @@
   --color-background: var(--bg);
   --color-text: var(--ink);
   --color-heading: var(--ink);
-  --font-body: 'Sora', 'Segoe UI', sans-serif;
-  --font-chrome: 'Major Mono Display', 'Sora', monospace;
-}
-
-@media (max-width: 40rem) {
-  :root {
-    --nav-h-ssr: calc(var(--nav-h-min) + 2px);
-  }
+  --font-body: 'Poppins', 'Segoe UI', sans-serif;
+  --font-chrome: 'Major Mono Display', 'Poppins', monospace;
 }
 
 *,

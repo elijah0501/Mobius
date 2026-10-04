@@ -26,6 +26,7 @@
   font-weight: 500;
   color: var(--ink);
   text-align: center;
+  font-variant-caps: all-small-caps;
   margin: 0;
   letter-spacing: 0.06em;
 }
@@ -33,7 +34,7 @@
 .section-title-bar {
   width: 7.5rem;
   height: 1px;
-  margin: 0.95rem auto 0.85rem;
+  margin: 0.95rem auto 2.6rem;
   border-radius: 999px;
   background: linear-gradient(
     90deg,
@@ -44,14 +45,6 @@
     transparent 100%
   );
   box-shadow: 0 0 10px rgb(212 175 55 / 28%);
-}
-
-.section-subtitle {
-  font-size: 1.02rem;
-  color: var(--muted);
-  text-align: center;
-  margin: 0 0 2.6rem;
-  font-weight: 400;
 }
 
 .glass-card {
@@ -208,7 +201,7 @@
     padding: 2.6rem 0;
   }
 
-  .section-subtitle {
+  .section-title-bar {
     margin-bottom: 2rem;
   }
 

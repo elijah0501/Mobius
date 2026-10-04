@@ -2,7 +2,6 @@
   <section class="showcase-section">
     <h2 class="section-title reveal">Featured Projects</h2>
     <div class="section-title-bar reveal"></div>
-    <p class="section-subtitle reveal">Selected work and open-source contributions placeholder</p>
 
     <div class="projects-grid reveal-stagger">
       <div v-for="i in 3" :key="i" class="glass-card project-card">

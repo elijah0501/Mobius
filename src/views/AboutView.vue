@@ -2,8 +2,9 @@
 import { onMounted, onUnmounted, nextTick } from 'vue'
 import AboutSection from '@/components/showcase/AboutSection.vue'
 import SkillsSection from '@/components/showcase/SkillsSection.vue'
-import PublicationsSection from '@/components/showcase/PublicationsSection.vue'
 import TimelineSection from '@/components/showcase/TimelineSection.vue'
+import PublicationsSection from '@/components/showcase/PublicationsSection.vue'
+import ProjectEntriesSection from '@/components/showcase/ProjectEntriesSection.vue'
 import { handleGlassMove } from '@/composables/useGlassEffect'
 
 let observer = null
@@ -37,8 +38,9 @@ onUnmounted(() => {
     <div class="showcase-container" @mousemove="handleGlassMove">
       <AboutSection />
       <SkillsSection />
-      <PublicationsSection />
       <TimelineSection />
+      <PublicationsSection />
+      <ProjectEntriesSection />
     </div>
   </main>
 </template>
