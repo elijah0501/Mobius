@@ -11,7 +11,6 @@ const { compact, narrow, remeasure } = useCollapsingNav(headerRef, linksRef)
 
 const links = [
   { to: '/', label: 'Home' },
-  { to: '/about', label: 'About' },
 ]
 
 function isActive(path) {
