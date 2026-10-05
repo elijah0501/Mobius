@@ -1,8 +1,23 @@
+import { copyFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
+
+const rootDir = dirname(fileURLToPath(import.meta.url))
+
+function githubPagesFallback() {
+  return {
+    name: 'github-pages-spa-fallback',
+    apply: 'build',
+    closeBundle() {
+      const distDir = join(rootDir, 'dist')
+      copyFileSync(join(distDir, 'index.html'), join(distDir, '404.html'))
+    },
+  }
+}
 
 export default defineConfig(({ command }) => ({
   // setup base path for GitHub Pages based on the command
@@ -11,6 +26,7 @@ export default defineConfig(({ command }) => ({
   plugins: [
     vue(),
     vueDevTools(),
+    githubPagesFallback(),
   ],
   resolve: {
     alias: {
