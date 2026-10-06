@@ -2,7 +2,7 @@ export const profile = {
   name: 'ZHANG, Hong (Elijah)',
   tagline: '',
   summary:
-    'PhD in Computer Science at Massey University, specializing in computer vision and human action recognition. Proficient in multiple programming languages, PyTorch, and full-stack development. I combine research expertise with practical application to deliver innovative computer vision systems.',
+    'PhD Candidate in Computer Science at Massey University, specializing in computer vision and human action recognition. Proficient in multiple programming languages, PyTorch, and full-stack development. I combine research expertise with practical application to deliver innovative computer vision systems.',
   fields: [
     { label: 'Location', value: 'Auckland, New Zealand' },
     {

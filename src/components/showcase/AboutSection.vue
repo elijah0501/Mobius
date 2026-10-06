@@ -405,7 +405,7 @@ function clamp(value, min, max) {
           <div class="about-info">
             <div class="about-heading">
               <h1 class="about-name">{{ profile.name }}</h1>
-              <p class="about-degree">PhD</p>
+              <p class="about-degree">PhD Candidate</p>
             </div>
             <p v-if="profile.tagline" class="about-tagline">{{ profile.tagline }}</p>
             <p class="about-summary">{{ profile.summary }}</p>

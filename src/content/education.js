@@ -1,6 +1,6 @@
 export const education = [
   {
-    degree: 'Computer Science, Ph.D.',
+    degree: 'Computer Science, Ph.D. Candidate',
     institution: 'Massey University, New Zealand',
   },
   {
