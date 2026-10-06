@@ -30,9 +30,6 @@ watch(
     <div class="site-nav__inner">
       <RouterLink to="/" class="site-nav__home" aria-label="Default">
         <span class="site-nav__logo" aria-hidden="true" />
-        <span class="site-nav__brand">
-          <span class="site-nav__word">Default</span>
-        </span>
       </RouterLink>
 
       <nav ref="linksRef" class="site-nav__links" aria-label="Primary">

@@ -654,13 +654,13 @@ function clamp(value, min, max) {
   padding: 1px;
   background: conic-gradient(
     from var(--ring-turn),
-    var(--foil-gold) 0%,
-    var(--foil-gold-lo) 62%,
-    var(--foil-gold) 78%,
-    var(--foil-gold-hi) 86%,
-    #fff6d6 90%,
-    var(--foil-gold-hi) 94%,
-    var(--foil-gold) 100%
+    var(--nav-silver) 0%,
+    var(--nav-silver-lo) 62%,
+    var(--nav-silver) 78%,
+    var(--nav-silver-hi) 86%,
+    var(--nav-silver-flash) 90%,
+    var(--nav-silver-hi) 94%,
+    var(--nav-silver) 100%
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -850,17 +850,18 @@ function clamp(value, min, max) {
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0.22em;
-  --foil-gold-deep: color-mix(in srgb, var(--foil-gold-lo) 50%, white);
   background-image: linear-gradient(
     118deg,
-    var(--foil-gold-hi) 0%,
-    var(--foil-gold) 20%,
-    var(--foil-gold-deep) 38%,
-    var(--foil-gold-hi) 52%,
-    #fff6d6 60%,
-    var(--foil-gold) 72%,
-    var(--foil-gold-deep) 88%,
-    var(--foil-gold) 100%
+    var(--nav-silver-hi) 0%,
+    var(--nav-silver) 16%,
+    var(--nav-silver-lo) 32%,
+    var(--nav-silver-hi) 46%,
+    var(--nav-silver-flash) 52%,
+    var(--nav-silver-flash) 58%,
+    var(--nav-silver-hi) 64%,
+    var(--nav-silver) 76%,
+    var(--nav-silver-deep) 90%,
+    var(--nav-silver) 100%
   );
   background-size: 220% 100%;
   background-position: var(--brand-foil-x) 50%;

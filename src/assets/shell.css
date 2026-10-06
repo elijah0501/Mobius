@@ -194,20 +194,21 @@ a {
   mask-position: center;
   -webkit-mask-size: cover;
   mask-size: cover;
-  --foil-gold-deep: color-mix(in srgb, var(--foil-gold-lo) 50%, white);
-  --logo-foil-hi: color-mix(in srgb, var(--foil-gold-hi) 40%, white);
-  --logo-foil: color-mix(in srgb, var(--foil-gold) 40%, white);
-  --logo-foil-deep: color-mix(in srgb, var(--foil-gold-deep) 40%, white);
-  --logo-foil-flash: color-mix(in srgb, #fff6d6 40%, white);
+  --logo-foil-hi: color-mix(in srgb, var(--nav-silver-hi) 70%, white);
+  --logo-foil: var(--nav-silver);
+  --logo-foil-deep: var(--nav-silver-lo);
+  --logo-foil-flash: var(--nav-silver-flash);
   background-image: conic-gradient(
     from var(--logo-foil-turn) at center,
     var(--logo-foil-hi) 0%,
-    var(--logo-foil) 20%,
-    var(--logo-foil-deep) 38%,
-    var(--logo-foil-hi) 52%,
-    var(--logo-foil-flash) 60%,
-    var(--logo-foil) 72%,
-    var(--logo-foil-deep) 88%,
+    var(--logo-foil) 16%,
+    var(--logo-foil-deep) 32%,
+    var(--logo-foil-hi) 46%,
+    var(--logo-foil-flash) 52%,
+    var(--logo-foil-flash) 58%,
+    var(--logo-foil-hi) 64%,
+    var(--logo-foil) 78%,
+    var(--logo-foil-deep) 92%,
     var(--logo-foil) 100%
   );
   animation: logo-foil-turn 120s linear infinite;
@@ -236,23 +237,24 @@ a {
 }
 
 .site-nav__word {
-  --foil-gold-deep: color-mix(in srgb, var(--foil-gold-lo) 50%, white);
   position: relative;
   z-index: 1;
-  font-family: 'Montserrat', 'Poppins', sans-serif;
+  font-family: 'Graduate', 'Poppins', sans-serif;
   font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: calc(0.12em + 10px);
+  letter-spacing: 5px;
   background-image: linear-gradient(
     118deg,
-    var(--foil-gold-hi) 0%,
-    var(--foil-gold) 20%,
-    var(--foil-gold-deep) 38%,
-    var(--foil-gold-hi) 52%,
-    #fff6d6 60%,
-    var(--foil-gold) 72%,
-    var(--foil-gold-deep) 88%,
-    var(--foil-gold) 100%
+    var(--nav-silver-hi) 0%,
+    var(--nav-silver) 16%,
+    var(--nav-silver-lo) 32%,
+    var(--nav-silver-hi) 46%,
+    var(--nav-silver-flash) 52%,
+    var(--nav-silver-flash) 58%,
+    var(--nav-silver-hi) 64%,
+    var(--nav-silver) 76%,
+    var(--nav-silver-deep) 90%,
+    var(--nav-silver) 100%
   );
   background-size: 220% 100%;
   -webkit-background-clip: text;
@@ -274,7 +276,7 @@ a {
 }
 
 :root {
-  animation: brand-foil-flow 18s ease-in-out infinite;
+  animation: brand-foil-flow 30s ease-in-out infinite;
 }
 
 @keyframes logo-foil-turn {
@@ -367,22 +369,22 @@ a {
 
 .site-nav__link--active,
 .site-nav__link--active:hover {
-  color: var(--foil-gold);
+  color: var(--nav-silver);
 }
 
 .site-nav__link--active .site-nav__link-text {
   background-image: linear-gradient(
     175deg,
-    var(--foil-gold-hi) 0%,
-    var(--foil-gold) 42%,
-    var(--foil-gold-lo) 78%,
-    #c9a227 100%
+    var(--nav-silver-flash) 0%,
+    var(--nav-silver-hi) 34%,
+    var(--nav-silver) 62%,
+    var(--nav-silver-lo) 100%
   );
   background-size: 180% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 8px rgb(212 175 55 / 28%));
+  filter: drop-shadow(0 0 8px rgb(255 255 255 / 32%));
   animation: brand-foil-flow 18s ease-in-out infinite;
 }
 
@@ -397,18 +399,19 @@ a {
   background-image: linear-gradient(
     90deg,
     transparent 0%,
-    var(--foil-gold-lo) 12%,
-    var(--foil-gold-hi) 28%,
-    var(--foil-gold) 50%,
-    #fff6d6 62%,
-    var(--foil-gold) 74%,
-    var(--foil-gold-lo) 88%,
+    var(--nav-silver-lo) 8%,
+    var(--nav-silver-hi) 24%,
+    var(--nav-silver-flash) 42%,
+    var(--nav-silver-flash) 52%,
+    var(--nav-silver-hi) 64%,
+    var(--nav-silver) 78%,
+    var(--nav-silver-lo) 90%,
     transparent 100%
   );
   background-size: 240% 100%;
   box-shadow:
-    0 0 6px rgb(212 175 55 / 30%),
-    0 0 14px rgb(243 226 168 / 18%);
+    0 0 6px rgb(255 255 255 / 42%),
+    0 0 14px rgb(215 224 230 / 28%);
   animation: nav-foil-underline 16s ease-in-out infinite;
 }
 
@@ -472,7 +475,7 @@ a {
 @supports not ((-webkit-background-clip: text) or (background-clip: text)) {
   .site-nav__word,
   .site-nav__link--active .site-nav__link-text {
-    color: var(--foil-gold);
+    color: var(--nav-silver);
     background-image: none;
     -webkit-text-fill-color: unset;
     filter: none;

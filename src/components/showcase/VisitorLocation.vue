@@ -283,7 +283,7 @@ onUnmounted(() => {
 .open-history:focus-visible,
 .pager-page:hover,
 .pager-page:focus-visible {
-  color: var(--foil-gold-hi);
+  color: var(--nav-silver);
 }
 
 .open-history:focus-visible,
@@ -307,7 +307,7 @@ onUnmounted(() => {
 }
 
 .pager-page.is-current {
-  color: var(--foil-gold-hi);
+  color: var(--nav-silver);
   box-shadow: inset 0 -1px 0 var(--foil-gold);
 }
 
