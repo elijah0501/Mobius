@@ -87,7 +87,7 @@ function levelOf(count, index) {
 .skill-item {
   flex-shrink: 0;
   color: color-mix(in srgb, var(--foil-gold-hi) calc((1 - var(--level, 0)) * 100%), #9a948c);
-  font-size: 0.98rem;
+  font-size: 1rem;
   line-height: 1.7;
   white-space: nowrap;
 }

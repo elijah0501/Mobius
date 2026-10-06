@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, onUnmounted, nextTick } from 'vue'
-import BlogSection from '@/components/showcase/BlogSection.vue'
+import AboutSection from '@/components/showcase/AboutSection.vue'
 import ProjectsSection from '@/components/showcase/ProjectsSection.vue'
 import VisitorLocation from '@/components/showcase/VisitorLocation.vue'
 import { handleGlassMove } from '@/composables/useGlassEffect'
@@ -34,7 +34,7 @@ onUnmounted(() => {
 <template>
   <main>
     <div class="showcase-container" @mousemove="handleGlassMove">
-      <BlogSection />
+      <AboutSection split />
       <ProjectsSection />
       <VisitorLocation />
     </div>

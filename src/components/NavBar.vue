@@ -1,7 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import BrandGoldDust from '@/components/BrandGoldDust.vue'
 import { useCollapsingNav } from '@/composables/useCollapsingNav'
 
 const route = useRoute()
@@ -32,7 +31,6 @@ watch(
       <RouterLink to="/" class="site-nav__home" aria-label="Default">
         <span class="site-nav__logo" aria-hidden="true" />
         <span class="site-nav__brand">
-          <BrandGoldDust />
           <span class="site-nav__word">Default</span>
         </span>
       </RouterLink>

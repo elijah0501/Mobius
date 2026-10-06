@@ -1,6 +1,14 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import EducationSection from '@/components/showcase/EducationSection.vue'
 import { profile } from '@/content/profile.js'
+
+defineProps({
+  split: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 const emailOpen = ref(false)
 const mailRoot = ref(null)
@@ -351,8 +359,13 @@ function clamp(value, min, max) {
 </script>
 
 <template>
-  <section class="showcase-section about-section reveal" aria-label="About">
+  <section
+    class="showcase-section about-section reveal"
+    :class="{ 'about-section--split': split }"
+    aria-label="About"
+  >
     <div class="about-layout">
+      <div class="about-profile">
       <button
         type="button"
         class="about-portrait"
@@ -390,10 +403,13 @@ function clamp(value, min, max) {
       <div class="about-card">
         <div class="about-content">
           <div class="about-info">
-            <h1 class="about-name">{{ profile.name }}</h1>
+            <div class="about-heading">
+              <h1 class="about-name">{{ profile.name }}</h1>
+              <p class="about-degree">PhD</p>
+            </div>
             <p v-if="profile.tagline" class="about-tagline">{{ profile.tagline }}</p>
             <p class="about-summary">{{ profile.summary }}</p>
-            <div class="about-meta">
+            <div v-if="!split" class="about-meta">
               <div v-for="field in profile.fields" :key="field.label" class="meta-item">
                 <span class="meta-label">{{ field.label }}</span>
                 <span class="meta-value">{{ field.value }}</span>
@@ -436,8 +452,10 @@ function clamp(value, min, max) {
               </span>
             </div>
           </div>
+        </div>
       </div>
       </div>
+      <EducationSection v-if="split" embedded />
     </div>
   </section>
 </template>
@@ -461,6 +479,89 @@ function clamp(value, min, max) {
   grid-template-columns: minmax(14.52rem, 1fr) minmax(0, 53.5rem);
   align-items: center;
   width: 100%;
+}
+
+.about-profile {
+  display: contents;
+}
+
+.about-section--split .about-layout {
+  grid-template-columns: minmax(0, 1.32fr) minmax(0, 0.56fr);
+  align-items: start;
+  gap: 6rem;
+}
+
+.about-section--split .about-layout > :deep(.education-panel) {
+  margin-top: calc(7rem / 2 - 1rem * 1.45 / 2);
+}
+
+.about-section--split .about-profile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'photo heading'
+    'summary summary'
+    'social social';
+  column-gap: 4rem;
+  row-gap: 2rem;
+  align-items: center;
+}
+
+.about-section--split .about-card,
+.about-section--split .about-content,
+.about-section--split .about-info {
+  display: contents;
+}
+
+.about-section--split .about-portrait {
+  grid-area: photo;
+  width: 5rem;
+  height: 5rem;
+  justify-self: start;
+  margin-left: 2rem;
+}
+
+.about-section--split .about-heading {
+  grid-area: heading;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin: 0;
+}
+
+.about-section--split .about-degree {
+  margin-right: 0;
+  font-size: 0.8rem;
+}
+
+.about-section--split .about-name {
+  font-size: 2.5rem;
+}
+
+.about-section--split .about-summary {
+  grid-area: summary;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.about-section--split .about-social {
+  grid-area: social;
+  margin-top: 0.15rem;
+  padding-top: 0.95rem;
+}
+
+.about-section--split .about-portrait__name,
+.about-section--split .about-portrait__latin {
+  font-size: 0.56rem;
+}
+
+.about-section--split .about-portrait__latin {
+  letter-spacing: 0.12em;
+}
+
+.about-section--split .about-portrait__seal {
+  font-size: 1.49rem;
 }
 
 @property --ring-turn {
@@ -664,7 +765,7 @@ function clamp(value, min, max) {
 
 .about-portrait__seal {
   font-family: 'Chong Xi Small Seal', serif;
-  font-size: 2.167rem;
+  font-size: 3.74rem;
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1;
@@ -724,13 +825,48 @@ function clamp(value, min, max) {
   min-width: 0;
 }
 
-.about-name {
+.about-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
   margin: 0 0 1.05rem;
+}
+
+.about-name {
+  margin: 0;
   font-size: 1.65rem;
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: 0.01em;
   color: var(--ink);
+}
+
+.about-degree {
+  margin: 0 calc(2ch - 0.22em) 0 0;
+  flex-shrink: 0;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  --foil-gold-deep: color-mix(in srgb, var(--foil-gold-lo) 50%, white);
+  background-image: linear-gradient(
+    118deg,
+    var(--foil-gold-hi) 0%,
+    var(--foil-gold) 20%,
+    var(--foil-gold-deep) 38%,
+    var(--foil-gold-hi) 52%,
+    #fff6d6 60%,
+    var(--foil-gold) 72%,
+    var(--foil-gold-deep) 88%,
+    var(--foil-gold) 100%
+  );
+  background-size: 220% 100%;
+  background-position: var(--brand-foil-x) 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .about-tagline {
@@ -742,7 +878,7 @@ function clamp(value, min, max) {
 
 .about-summary {
   margin: 0 0 1.5rem;
-  font-size: 0.98rem;
+  font-size: 1rem;
   line-height: 1.75;
   color: var(--ink);
   text-align: justify;
@@ -750,7 +886,7 @@ function clamp(value, min, max) {
 
 .meta-value {
   min-width: 0;
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.45;
   color: var(--ink);
 }
@@ -913,6 +1049,19 @@ button.about-link {
   flex-shrink: 0;
 }
 
+@media (max-width: 960px) {
+  .about-section--split .about-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2.4rem;
+  }
+
+  .about-section--split .about-layout > :deep(.education-panel) {
+    margin-top: 0;
+  }
+}
+
 @media (max-width: 760px) {
   .about-layout {
     display: flex;
@@ -957,6 +1106,16 @@ button.about-link {
     text-align: center;
   }
 
+  .about-heading {
+    width: 100%;
+    justify-content: center;
+    gap: 0.85rem;
+  }
+
+  .about-degree {
+    margin-right: 0;
+  }
+
   .about-summary {
     text-align: center;
   }
@@ -990,6 +1149,25 @@ button.about-link {
     left: auto;
     right: 0.85rem;
     transform: rotate(45deg);
+  }
+
+  .about-section--split .about-layout {
+    align-items: stretch;
+    gap: 2.4rem;
+  }
+
+  .about-section--split .about-heading {
+    justify-content: flex-start;
+    width: auto;
+  }
+
+  .about-section--split .about-summary,
+  .about-section--split .about-content {
+    text-align: left;
+  }
+
+  .about-section--split .about-social {
+    justify-content: flex-start;
   }
 }
 </style>

@@ -258,42 +258,23 @@ a {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: brand-foil-flow 18s ease-in-out infinite;
-}
-
-.brand-dust {
-  --nav-p: 0;
-  --nav-spin: 0;
-  --nav-edge: 0;
-  pointer-events: none;
-  position: absolute;
-  inset: -0.5rem -0.6rem -0.35rem -0.4rem;
-  z-index: 0;
-  overflow: visible;
-}
-
-.brand-dust__grain {
-  position: absolute;
-  border-radius: 999px;
-  background: radial-gradient(
-    circle,
-    #fff8e0 0%,
-    var(--foil-gold-hi) 38%,
-    var(--foil-gold) 72%,
-    transparent 100%
-  );
-  box-shadow: 0 0 2px rgb(243 226 168 / 55%);
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  animation-name: map-gold-spray;
-  animation-timing-function: cubic-bezier(0.18, 0.55, 0.22, 1);
-  animation-iteration-count: infinite;
+  background-position: var(--brand-foil-x) 50%;
 }
 
 @property --logo-foil-turn {
   syntax: '<angle>';
   inherits: false;
   initial-value: 0deg;
+}
+
+@property --brand-foil-x {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+
+:root {
+  animation: brand-foil-flow 18s ease-in-out infinite;
 }
 
 @keyframes logo-foil-turn {
@@ -305,30 +286,10 @@ a {
 @keyframes brand-foil-flow {
   0%,
   100% {
-    background-position: 0% 50%;
+    --brand-foil-x: 0%;
   }
   50% {
-    background-position: 100% 50%;
-  }
-}
-
-@keyframes map-gold-spray {
-  0% {
-    transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(0.35);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.9;
-    transform: translate(-50%, -50%)
-      translate3d(calc(var(--dust-dx, 8px) * 0.1), calc(var(--dust-dy, -8px) * 0.1), 0) scale(1);
-  }
-  60% {
-    opacity: 0.45;
-  }
-  100% {
-    transform: translate(-50%, -50%) translate3d(var(--dust-dx, 8px), var(--dust-dy, -8px), 0)
-      scale(0.2);
-    opacity: 0;
+    --brand-foil-x: 100%;
   }
 }
 
@@ -526,6 +487,7 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :root,
   .liquid-glass::after,
   .site-nav__word,
   .site-nav__logo,
@@ -542,10 +504,6 @@ a {
   .site-nav__logo {
     transform: translateX(calc(var(--nav-p) * (var(--nav-logo-min) - var(--nav-logo-max)) * 0.5rem))
       scale(calc(1 - var(--nav-p) * (1 - var(--nav-logo-min) / var(--nav-logo-max))));
-  }
-
-  .brand-dust {
-    display: none;
   }
 }
 

@@ -121,7 +121,7 @@ function goTo(nextPage) {
 }
 
 .project-title {
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.45;
   color: var(--ink);
 }
